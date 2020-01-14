@@ -99,7 +99,7 @@ Output is located in ```src/DotNetToolsOutdated/nupkg```
 ### Uninstall
 
 ```
-dotnet tools uninstall -g dotnet-tools-outdated
+dotnet tool uninstall -g dotnet-tools-outdated
 ```
 
 ## Useful Links
