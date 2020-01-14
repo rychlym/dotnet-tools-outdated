@@ -13,7 +13,7 @@ Checks if any of installed .NET Core CLI tools are outdated
 
 ### .NET Core 2.1 or .NET Core 3.1 & higher
 ```
-dotnet tools install --global dotnet-tools-outdated
+dotnet tool install -g dotnet-tools-outdated
 ```
 ## Usage
 
