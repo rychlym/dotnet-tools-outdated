@@ -1,0 +1,18 @@
+{
+  "FileVersion": 2,
+  "Id": "92d46581-8d60-418d-837c-3a483c9d2a57",
+  "Items": [
+    {
+      "Id": "518d1171-038e-49bf-9cf0-bdfb39418e56",
+      "Command": "-f xml"
+    },
+    {
+      "Id": "33610b74-eadd-4916-b647-1e74f3ecccd0",
+      "Command": "-f json"
+    },
+    {
+      "Id": "666f74fb-2abd-405e-a9d0-1b7f3b25bfd9",
+      "Command": "-n volo.abp.cli"
+    }
+  ]
+}
