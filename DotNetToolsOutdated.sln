@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetToolsOutdated", "src\DotNetToolOutdated\DotNetToolsOutdated.csproj", "{92D46581-8D60-418D-837C-3A483C9D2A57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetToolsOutdated", "src\DotNetToolsOutdated\DotNetToolsOutdated.csproj", "{92D46581-8D60-418D-837C-3A483C9D2A57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{6A7FDD27-954D-4C97-913C-3433329C08AB}"
 	ProjectSection(SolutionItems) = preProject
