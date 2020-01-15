@@ -115,7 +115,7 @@ dotnet pack -c release -o nupkg
 
 Output is located in ```src/DotNetToolsOutdated/nupkg```
 
-### Uninstall
+## Uninstall
 
 ```bash
 dotnet tool uninstall -g dotnet-tools-outdated
@@ -123,7 +123,7 @@ dotnet tool uninstall -g dotnet-tools-outdated
 
 ## Useful Links
 
-###.NET Core Global Tools
+### .NET Core Global Tools
 
 * [.NET Core Global Tools overview](https://docs.microsoft.com/en-us/dotnet/core/tools/global-tools)
 
