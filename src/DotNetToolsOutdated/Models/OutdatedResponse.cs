@@ -1,18 +1,22 @@
+using System.Diagnostics;
+
 namespace DotNetToolsOutdated.Models
 {
+    [DebuggerDisplay("{DebuggerDisplay,nq}")]
+
     public class OutdatedResponse
     {
         public string Directory;
 
         public string PackageName;
 
-        public string InstalledVer;
+        public string CurrentVer;
 
         public string AvailableVer;
 
         internal OutdatedResponseProcessing processing;
 
-        public bool IsOutdated => CompareVersions(InstalledVer, AvailableVer) == -1;
+        public bool IsOutdated => CompareVersions(CurrentVer, AvailableVer) == -1;
 
 
         public static int CompareVersions(string ver1, string ver2)
@@ -33,6 +37,23 @@ namespace DotNetToolsOutdated.Models
             }
             return 0;
 
+        }
+
+        internal string DebuggerDisplay
+        {
+            get
+            {
+                var res = $"OutResp: \"{PackageName}\", current: {CurrentVer}, avail: {AvailableVer}";
+                if (processing.ProcessedOkOutdated)
+                {
+                    res = res + ", ok OUTDATED";
+                }
+                else if (processing.ProcessedOk)
+                {
+                    res = res + ", ok";
+                }
+                return res;
+            }
         }
     }
 }

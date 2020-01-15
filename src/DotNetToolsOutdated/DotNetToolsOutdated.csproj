@@ -6,17 +6,18 @@
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
     <AssemblyName>dotnet-tools-outdated</AssemblyName>
-    <Description>Checks if any of installed .NET Core CLI tools are outdated
+    <Description>
+      Checks whether any of currently installed .NET Core global tools are outdated
 
-    Example: dotnet-tools-outdated</Description>
+      Example: dotnet-tools-outdated</Description>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <DebugType>portable</DebugType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/rychlym/dotnet-tools-outdated</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rychlym/dotnet-tools-outdated</RepositoryUrl>
-    <PackageTags>dotnet core, tools, outdated</PackageTags>
-    <Version>0.1.1</Version>
+    <PackageTags>dotnet core,global tools, outdated</PackageTags>
+    <Version>0.2.0</Version>
     <Authors>Mojmir Rychly</Authors>
     <Company />
     <Product />

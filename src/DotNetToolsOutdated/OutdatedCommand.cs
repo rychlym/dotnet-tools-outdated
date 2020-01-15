@@ -55,120 +55,128 @@ namespace DotNetToolsOutdated
             var dirs = Directory.GetDirectories(ToolPath);
             if (dirs != null)
             {
-                var outdatedPkgs = new List<OutdatedResponse>();
+                var pkgs = new List<OutdatedResponse>();
                 // fetch the package name
                 foreach (var dir in dirs)
                 {
                     var pkgName = Path.GetFileName(dir);
                     if (pkgName.Equals(".stage", StringComparison.Ordinal)) continue;
-                    outdatedPkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
+                    pkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
                 }
 
                 // tasks for awaiting when all done together
-                var httpClientGetTasks = new List<Task<HttpResponseMessage>>();
-                var httpResponseReadTasks = new List<Task<PackageResponse>>();
+                var apiGetResponseOkContinuedTasks = new List<Task>();
+                var pkgResponseReadTasks = new List<Task<PackageResponse>>();
 
-                foreach (var outdatedPkg in outdatedPkgs)
+                foreach (var pkg in pkgs)
                 {
-                    if (!string.IsNullOrEmpty(PackageName) && !PackageName.Equals(outdatedPkg.PackageName, StringComparison.Ordinal)) continue;
+                    if (!string.IsNullOrEmpty(PackageName) && !PackageName.Equals(pkg.PackageName, StringComparison.Ordinal)) continue;
 
                     // fetch the installed version
-                    var verDirs = Directory.GetDirectories(outdatedPkg.Directory);
+                    var verDirs = Directory.GetDirectories(pkg.Directory);
                     if (verDirs == null)
                     {
-                        Console.WriteLine($"{outdatedPkg.PackageName} package - no sub-dirs about version");
+                        Console.WriteLine($"{pkg.PackageName} package - no sub-dirs about version");
                         continue;
                     }
 
                     if (verDirs.Length > 1)
                     {
-                        Console.WriteLine($"ambiguity for {outdatedPkg.PackageName} package - seems to be more version sub-dirs");
+                        Console.WriteLine($"ambiguity for {pkg.PackageName} package - seems to be more version sub-dirs");
                         continue;
                     }
-                    if (verDirs.Length == 1) outdatedPkg.InstalledVer = Path.GetFileName(verDirs[0]);
+                    if (verDirs.Length == 1) pkg.CurrentVer = Path.GetFileName(verDirs[0]);
 
                     // start tasks for fetching the available version
-                    var url = $"https://api.nuget.org/v3/registration3/{outdatedPkg.PackageName}/index.json";
-                    outdatedPkg.processing.NugetApiGetTask = httpClient.GetAsync(url);
-                    httpClientGetTasks.Add(outdatedPkg.processing.NugetApiGetTask);
-                    outdatedPkg.processing.NugetApiGetTask.ContinueWith(t =>
+                    var url = $"https://api.nuget.org/v3/registration3/{pkg.PackageName}/index.json";
+                    var pureHttpGetTask = httpClient.GetAsync(url);
+                    pkg.processing.ApiGetTaskOkContinued = pureHttpGetTask.ContinueWith(t =>
                         {
-                            // continue with async processing of the response message
+                            // on run to completion continue with async processing of the response message ..
                             HttpResponseMessage response = t.Result;
                             if (response.IsSuccessStatusCode)
                             {
-                                outdatedPkg.processing.ResponseReadTask = response.Content.ReadAsAsync<PackageResponse>();
-                                httpResponseReadTasks.Add(outdatedPkg.processing.ResponseReadTask);
+                                pkg.processing.OkResponseReadTask = response.Content.ReadAsAsync<PackageResponse>();
+                                pkgResponseReadTasks.Add(pkg.processing.OkResponseReadTask);
                             }
                             else
                             {
-                                Console.WriteLine($"No results found for {outdatedPkg.PackageName}");
+                                Console.WriteLine($"No results found for {pkg.PackageName}");
                             }
-                        }, TaskContinuationOptions.OnlyOnRanToCompletion).RunAsynchronously();
+                        }, 
+                        TaskContinuationOptions.OnlyOnRanToCompletion);
+                    // on faulted output a message to console
+                    pureHttpGetTask.ContinueWith(
+                        t => Console.WriteLine($"Task finding results for {pkg.PackageName} has faulted!"),
+                        TaskContinuationOptions.OnlyOnFaulted)
+                    .RunAsyncAndForget();
+
+                    apiGetResponseOkContinuedTasks.Add(pkg.processing.ApiGetTaskOkContinued);
                 }
 
                 // await tasks for fetching the available version
-                await Task.WhenAll(httpClientGetTasks);
-                await Task.WhenAll(httpResponseReadTasks);
+                await Task.WhenAll(apiGetResponseOkContinuedTasks);
+                // there should be same amount of response read tasks, which should be awaited
+                await Task.WhenAll(pkgResponseReadTasks);
 
                 // finish fetching the available version
-                foreach (var outdatedPkg in outdatedPkgs)
+                foreach (var pkg in pkgs)
                 {
                     // no response read task at all => do not finish processing the available version
-                    if (outdatedPkg.processing.ResponseReadTask == null) continue;
+                    if (pkg.processing.OkResponseReadTask == null) continue;
 
                     // check error/ cancellation of the response read task
-                    if (!outdatedPkg.processing.ResponseReadTask.IsCompletedSuccessfully)
+                    if (!pkg.processing.OkResponseReadTask.IsCompletedSuccessfully)
                     {
-                        if (outdatedPkg.processing.ResponseReadTask.IsFaulted)
+                        if (pkg.processing.OkResponseReadTask.IsFaulted)
                         {
-                            Console.WriteLine($"Error parsing the response for {outdatedPkg.PackageName}");
+                            Console.WriteLine($"Error parsing the response for {pkg.PackageName}");
                         }
-                        else if (outdatedPkg.processing.ResponseReadTask.IsCanceled)
+                        else if (pkg.processing.OkResponseReadTask.IsCanceled)
                         {
-                            Console.WriteLine($"Cancellation parsing the response for {outdatedPkg.PackageName}");
+                            Console.WriteLine($"Cancellation parsing the response for {pkg.PackageName}");
                         }
                         continue;
                     }
 
                     // the response read task was completed successfully
-                    var pkgResponse = outdatedPkg.processing.ResponseReadTask.Result;
+                    var pkgResponse = pkg.processing.OkResponseReadTask.Result;
 
                     // set the available version
-                    outdatedPkg.AvailableVer = pkgResponse.Items[0].Upper;
+                    pkg.AvailableVer = pkgResponse.Items[0].Upper;
 
                     // since now all is fetched ok
-                    outdatedPkg.processing.ProcessedOk = true;
+                    pkg.processing.ProcessedOk = true;
                     resultsCnt++;
 
-                    if (outdatedPkg.IsOutdated)
+                    if (pkg.IsOutdated)
                     {
                         // the package is determined as outdated 
-                        outdatedPkg.processing.ProcessedOkOutdated = true;
+                        pkg.processing.ProcessedOkOutdated = true;
                         outdatedCnt++;
                     }
                 }
 
-                PrintOutdatedResults(outdatedPkgs);
+                PrintOutdatedResults(pkgs);
             }
 
         }
 
 
-        private void PrintOutdatedResults(List<OutdatedResponse> outdatedPkgs)
+        private void PrintOutdatedResults(List<OutdatedResponse> pkgs)
         {
             var fmt = !string.IsNullOrEmpty(Format) ? Format : "table";
             switch (fmt)
             {
                 case "json":
-                    PrintJson(outdatedPkgs);
+                    PrintJson(pkgs);
                     break;
                 case "xml":
-                    PrintXml(outdatedPkgs);
+                    PrintXml(pkgs);
                     break;
                 case "table":
                 default:
-                    PrintTable(outdatedPkgs);
+                    PrintTable(pkgs);
                     break;
             }
         }
@@ -196,7 +204,7 @@ namespace DotNetToolsOutdated
         }
 
 
-        private void PrintJson(List<OutdatedResponse> outdatedPkgs)
+        private void PrintJson(List<OutdatedResponse> pkgs)
         {
             var resultsCnt = 0;
             using (var outStream = OpenOutputStream(true))
@@ -208,18 +216,18 @@ namespace DotNetToolsOutdated
                 jwr.WriteStartObject();
                 jwr.WritePropertyName("outdatedPackages");
                 jwr.WriteStartArray();
-                foreach (var outdatedPkg in outdatedPkgs)
+                foreach (var pkg in pkgs)
                 {
-                    if (outdatedPkg.processing.ProcessedOkOutdated)
+                    if (pkg.processing.ProcessedOkOutdated)
                     {
                         resultsCnt++;
                         jwr.WriteStartObject();
                         jwr.WritePropertyName("name");
-                        jwr.WriteValue(outdatedPkg.PackageName);
-                        jwr.WritePropertyName("installedVersion");
-                        jwr.WriteValue(outdatedPkg.InstalledVer);
+                        jwr.WriteValue(pkg.PackageName);
+                        jwr.WritePropertyName("currentVersion");
+                        jwr.WriteValue(pkg.CurrentVer);
                         jwr.WritePropertyName("availableVersion");
-                        jwr.WriteValue(outdatedPkg.AvailableVer);
+                        jwr.WriteValue(pkg.AvailableVer);
                         jwr.WriteEndObject();
                     }
                 }
@@ -229,7 +237,7 @@ namespace DotNetToolsOutdated
         }
 
 
-        private void PrintXml(List<OutdatedResponse> outdatedPkgs)
+        private void PrintXml(List<OutdatedResponse> pkgs)
         {
             var resultsCnt = 0;
 
@@ -241,15 +249,15 @@ namespace DotNetToolsOutdated
             {
                 xwr.WriteStartDocument();
                 xwr.WriteStartElement("outdated");
-                foreach (var outdatedPkg in outdatedPkgs)
+                foreach (var pkg in pkgs)
                 {
-                    if (outdatedPkg.processing.ProcessedOkOutdated)
+                    if (pkg.processing.ProcessedOkOutdated)
                     {
                         resultsCnt++;
                         xwr.WriteStartElement("package");
-                        xwr.WriteAttributeString("name", outdatedPkg.PackageName);
-                        xwr.WriteElementString("installedVersion", outdatedPkg.InstalledVer);
-                        xwr.WriteElementString("availableVersion", outdatedPkg.AvailableVer);
+                        xwr.WriteAttributeString("name", pkg.PackageName);
+                        xwr.WriteElementString("currentVersion", pkg.CurrentVer);
+                        xwr.WriteElementString("availableVersion", pkg.AvailableVer);
                         xwr.WriteEndElement();
                     }
                 }
@@ -259,7 +267,7 @@ namespace DotNetToolsOutdated
         }
 
 
-        private void PrintTable(List<OutdatedResponse> outdatedPkgs)
+        private void PrintTable(List<OutdatedResponse> pkgs)
         {
             var maxNameLen = 0;
             var maxInstVerLen = 0;
@@ -267,37 +275,37 @@ namespace DotNetToolsOutdated
             var resultsCnt = 0;
 
             // preparation for the paddings determination
-            foreach (var outdatedPkg in outdatedPkgs)
+            foreach (var pkg in pkgs)
             {
-                if (outdatedPkg.processing.ProcessedOkOutdated)
+                if (pkg.processing.ProcessedOkOutdated)
                 {
                     resultsCnt++;
-                    if (maxNameLen < outdatedPkg.PackageName.Length) maxNameLen = outdatedPkg.PackageName.Length;
-                    if (maxInstVerLen < outdatedPkg.InstalledVer.Length) maxInstVerLen = outdatedPkg.InstalledVer.Length;
-                    if (maxAvailVerLen < outdatedPkg.AvailableVer.Length) maxAvailVerLen = outdatedPkg.AvailableVer.Length;
+                    if (maxNameLen < pkg.PackageName.Length) maxNameLen = pkg.PackageName.Length;
+                    if (maxInstVerLen < pkg.CurrentVer.Length) maxInstVerLen = pkg.CurrentVer.Length;
+                    if (maxAvailVerLen < pkg.AvailableVer.Length) maxAvailVerLen = pkg.AvailableVer.Length;
                 }
             }
 
             if (resultsCnt > 0)
             {
                 const string packageIdStr = "Package Id";
-                const string installedVerStr = "Installed";
+                const string currentVerStr = "Current";
                 const string availVerStr = "Available";
                 if (maxNameLen < packageIdStr.Length) maxNameLen = packageIdStr.Length;
-                if (maxInstVerLen < installedVerStr.Length) maxInstVerLen = installedVerStr.Length;
+                if (maxInstVerLen < currentVerStr.Length) maxInstVerLen = currentVerStr.Length;
                 if (maxAvailVerLen < availVerStr.Length) maxAvailVerLen = availVerStr.Length;
 
 
                 using (var outStream = OpenOutputStream(true))
                 using (var tw = new StreamWriter(outStream, GetOutputEncoding()))
                 {
-                    tw.WriteLine($"{packageIdStr.PadRight(maxNameLen)} {installedVerStr.PadRight(maxInstVerLen)} {availVerStr.PadRight(maxAvailVerLen)}");
+                    tw.WriteLine($"{packageIdStr.PadRight(maxNameLen)} {currentVerStr.PadRight(maxInstVerLen)} {availVerStr.PadRight(maxAvailVerLen)}");
                     tw.WriteLine(new string('-', maxNameLen + maxInstVerLen + maxAvailVerLen + 2));
-                    foreach (var outdatedPkg in outdatedPkgs)
+                    foreach (var outdatedPkg in pkgs)
                     {
                         if (outdatedPkg.processing.ProcessedOkOutdated)
                         {
-                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {outdatedPkg.InstalledVer.PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxAvailVerLen)}");
+                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {outdatedPkg.CurrentVer.PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxAvailVerLen)}");
                         }
                     }
                 }
