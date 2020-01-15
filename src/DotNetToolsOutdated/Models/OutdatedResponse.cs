@@ -1,4 +1,4 @@
-namespace DotNetToolsOutdated
+namespace DotNetToolsOutdated.Models
 {
     public class OutdatedResponse
     {
@@ -10,10 +10,10 @@ namespace DotNetToolsOutdated
 
         public string AvailableVer;
 
+        internal OutdatedResponseProcessing processing;
 
         public bool IsOutdated => CompareVersions(InstalledVer, AvailableVer) == -1;
 
-        public bool ProcessedOkOutdated;
 
         public static int CompareVersions(string ver1, string ver2)
         {

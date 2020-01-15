@@ -6,7 +6,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using DotNetToolsOutdated.Extensions;
 using DotNetToolsOutdated.JsonModels;
+using DotNetToolsOutdated.Models;
 using McMaster.Extensions.CommandLineUtils;
 using Newtonsoft.Json;
 
@@ -37,6 +39,7 @@ namespace DotNetToolsOutdated
         [Option("-o|--output", "Output file path. (Default: stdout)", CommandOptionType.SingleValue)]
         public string OutputPath { get; set; }
 
+
         private async Task OnExecuteAsync()
         {
             if (ToolPath == null)
@@ -47,6 +50,7 @@ namespace DotNetToolsOutdated
 
             var httpClient = new HttpClient();
             var resultsCnt = 0;
+            var outdatedCnt = 0;
 
             var dirs = Directory.GetDirectories(ToolPath);
             if (dirs != null)
@@ -60,7 +64,10 @@ namespace DotNetToolsOutdated
                     outdatedPkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
                 }
 
-                var nugetApiGetTasks = new List<Task<HttpResponseMessage>>();
+                // tasks for awaiting when all done together
+                var httpClientGetTasks = new List<Task<HttpResponseMessage>>();
+                var httpResponseReadTasks = new List<Task<PackageResponse>>();
+
                 foreach (var outdatedPkg in outdatedPkgs)
                 {
                     if (!string.IsNullOrEmpty(PackageName) && !PackageName.Equals(outdatedPkg.PackageName, StringComparison.Ordinal)) continue;
@@ -80,32 +87,75 @@ namespace DotNetToolsOutdated
                     }
                     if (verDirs.Length == 1) outdatedPkg.InstalledVer = Path.GetFileName(verDirs[0]);
 
-                    // fetch the available version
+                    // start tasks for fetching the available version
                     var url = $"https://api.nuget.org/v3/registration3/{outdatedPkg.PackageName}/index.json";
-                    var response = await httpClient.GetAsync(url);
-                    var pkgResponse = await response.Content.ReadAsAsync<PackageResponse>();
+                    outdatedPkg.processing.NugetApiGetTask = httpClient.GetAsync(url);
+                    httpClientGetTasks.Add(outdatedPkg.processing.NugetApiGetTask);
+                    outdatedPkg.processing.NugetApiGetTask.ContinueWith(t =>
+                        {
+                            // continue with async processing of the response message
+                            HttpResponseMessage response = t.Result;
+                            if (response.IsSuccessStatusCode)
+                            {
+                                outdatedPkg.processing.ResponseReadTask = response.Content.ReadAsAsync<PackageResponse>();
+                                httpResponseReadTasks.Add(outdatedPkg.processing.ResponseReadTask);
+                            }
+                            else
+                            {
+                                Console.WriteLine($"No results found for {outdatedPkg.PackageName}");
+                            }
+                        }, TaskContinuationOptions.OnlyOnRanToCompletion).RunAsynchronously();
+                }
 
-                    if (!response.IsSuccessStatusCode)
+                // await tasks for fetching the available version
+                await Task.WhenAll(httpClientGetTasks);
+                await Task.WhenAll(httpResponseReadTasks);
+
+                // finish fetching the available version
+                foreach (var outdatedPkg in outdatedPkgs)
+                {
+                    // no response read task at all => do not finish processing the available version
+                    if (outdatedPkg.processing.ResponseReadTask == null) continue;
+
+                    // check error/ cancellation of the response read task
+                    if (!outdatedPkg.processing.ResponseReadTask.IsCompletedSuccessfully)
                     {
-                        Console.WriteLine($"No results found for {outdatedPkg.PackageName}");
+                        if (outdatedPkg.processing.ResponseReadTask.IsFaulted)
+                        {
+                            Console.WriteLine($"Error parsing the response for {outdatedPkg.PackageName}");
+                        }
+                        else if (outdatedPkg.processing.ResponseReadTask.IsCanceled)
+                        {
+                            Console.WriteLine($"Cancellation parsing the response for {outdatedPkg.PackageName}");
+                        }
                         continue;
                     }
 
+                    // the response read task was completed successfully
+                    var pkgResponse = outdatedPkg.processing.ResponseReadTask.Result;
+
+                    // set the available version
                     outdatedPkg.AvailableVer = pkgResponse.Items[0].Upper;
+
+                    // since now all is fetched ok
+                    outdatedPkg.processing.ProcessedOk = true;
+                    resultsCnt++;
 
                     if (outdatedPkg.IsOutdated)
                     {
                         // the package is determined as outdated 
-                        outdatedPkg.ProcessedOkOutdated = true;
-                        resultsCnt++;
+                        outdatedPkg.processing.ProcessedOkOutdated = true;
+                        outdatedCnt++;
                     }
                 }
-                PrintResults(outdatedPkgs);
+
+                PrintOutdatedResults(outdatedPkgs);
             }
 
         }
 
-        private void PrintResults(List<OutdatedResponse> outdatedPkgs)
+
+        private void PrintOutdatedResults(List<OutdatedResponse> outdatedPkgs)
         {
             var fmt = !string.IsNullOrEmpty(Format) ? Format : "table";
             switch (fmt)
@@ -145,6 +195,7 @@ namespace DotNetToolsOutdated
             }
         }
 
+
         private void PrintJson(List<OutdatedResponse> outdatedPkgs)
         {
             var resultsCnt = 0;
@@ -159,7 +210,7 @@ namespace DotNetToolsOutdated
                 jwr.WriteStartArray();
                 foreach (var outdatedPkg in outdatedPkgs)
                 {
-                    if (outdatedPkg.ProcessedOkOutdated)
+                    if (outdatedPkg.processing.ProcessedOkOutdated)
                     {
                         resultsCnt++;
                         jwr.WriteStartObject();
@@ -192,7 +243,7 @@ namespace DotNetToolsOutdated
                 xwr.WriteStartElement("outdated");
                 foreach (var outdatedPkg in outdatedPkgs)
                 {
-                    if (outdatedPkg.ProcessedOkOutdated)
+                    if (outdatedPkg.processing.ProcessedOkOutdated)
                     {
                         resultsCnt++;
                         xwr.WriteStartElement("package");
@@ -218,7 +269,7 @@ namespace DotNetToolsOutdated
             // preparation for the paddings determination
             foreach (var outdatedPkg in outdatedPkgs)
             {
-                if (outdatedPkg.ProcessedOkOutdated)
+                if (outdatedPkg.processing.ProcessedOkOutdated)
                 {
                     resultsCnt++;
                     if (maxNameLen < outdatedPkg.PackageName.Length) maxNameLen = outdatedPkg.PackageName.Length;
@@ -244,7 +295,7 @@ namespace DotNetToolsOutdated
                     tw.WriteLine(new string('-', maxNameLen + maxInstVerLen + maxAvailVerLen + 2));
                     foreach (var outdatedPkg in outdatedPkgs)
                     {
-                        if (outdatedPkg.ProcessedOkOutdated)
+                        if (outdatedPkg.processing.ProcessedOkOutdated)
                         {
                             tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {outdatedPkg.InstalledVer.PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxAvailVerLen)}");
                         }
@@ -256,6 +307,7 @@ namespace DotNetToolsOutdated
 
         Encoding GetOutputEncoding()
             => IsUtf8 ? new UTF8Encoding(false) : Encoding.Default;
+
 
         private static string GetVersion()
             => typeof(OutdatedCommand).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
