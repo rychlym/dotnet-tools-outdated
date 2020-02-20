@@ -15,7 +15,7 @@ namespace DotNetToolsOutdated.JsonModels
     using Newtonsoft.Json;
     using Newtonsoft.Json.Converters;
 
-    public partial class PackageResponse
+    public partial class VersionsResponseOld
     {
         [JsonProperty("@id")]
         public Uri Id { get; set; }
@@ -244,14 +244,14 @@ namespace DotNetToolsOutdated.JsonModels
 
     public enum ItemType { Package };
 
-    public partial class PackageResponse
+    public partial class VersionsResponse
     {
-        public static PackageResponse FromJson(string json) => JsonConvert.DeserializeObject<PackageResponse>(json, DotNetToolsOutdated.JsonModels.Converter.Settings);
+        public static VersionsResponse FromJson(string json) => JsonConvert.DeserializeObject<VersionsResponse>(json, DotNetToolsOutdated.JsonModels.Converter.Settings);
     }
 
     public static class Serialize
     {
-        public static string ToJson(this PackageResponse self) => JsonConvert.SerializeObject(self, DotNetToolsOutdated.JsonModels.Converter.Settings);
+        public static string ToJson(this VersionsResponse self) => JsonConvert.SerializeObject(self, DotNetToolsOutdated.JsonModels.Converter.Settings);
     }
 
     internal static class Converter

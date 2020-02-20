@@ -66,7 +66,7 @@ namespace DotNetToolsOutdated
 
                 // tasks for awaiting when all done together
                 var apiGetResponseOkContinuedTasks = new List<Task>();
-                var pkgResponseReadTasks = new List<Task<PackageResponse>>();
+                var pkgResponseReadTasks = new List<Task<VersionsResponse>>();
 
                 foreach (var pkg in pkgs)
                 {
@@ -88,7 +88,7 @@ namespace DotNetToolsOutdated
                     if (verDirs.Length == 1) pkg.CurrentVer = Path.GetFileName(verDirs[0]);
 
                     // start tasks for fetching the available version
-                    var url = $"https://api.nuget.org/v3/registration3/{pkg.PackageName}/index.json";
+                    var url = $"https://api.nuget.org/v3-flatcontainer/{pkg.PackageName}/index.json";
                     var pureHttpGetTask = httpClient.GetAsync(url);
                     pkg.processing.ApiGetTaskOkContinued = pureHttpGetTask.ContinueWith(t =>
                         {
@@ -96,7 +96,7 @@ namespace DotNetToolsOutdated
                             HttpResponseMessage response = t.Result;
                             if (response.IsSuccessStatusCode)
                             {
-                                pkg.processing.OkResponseReadTask = response.Content.ReadAsAsync<PackageResponse>();
+                                pkg.processing.OkResponseReadTask = response.Content.ReadAsAsync<VersionsResponse>();
                                 pkgResponseReadTasks.Add(pkg.processing.OkResponseReadTask);
                             }
                             else
@@ -140,10 +140,10 @@ namespace DotNetToolsOutdated
                     }
 
                     // the response read task was completed successfully
-                    var pkgResponse = pkg.processing.OkResponseReadTask.Result;
+                    var versionsResponse = pkg.processing.OkResponseReadTask.Result;
 
                     // set the available version
-                    pkg.AvailableVer = pkgResponse.Items[0].Upper;
+                    pkg.AvailableVer = versionsResponse.Versions[versionsResponse.Versions.Length - 1];
 
                     // since now all is fetched ok
                     pkg.processing.ProcessedOk = true;
@@ -207,6 +207,7 @@ namespace DotNetToolsOutdated
         private void PrintJson(List<OutdatedResponse> pkgs)
         {
             var resultsCnt = 0;
+
             using (var outStream = OpenOutputStream(true))
             using (var wr = new StreamWriter(outStream, GetOutputEncoding()))
             using (var jwr = new JsonTextWriter(wr))
