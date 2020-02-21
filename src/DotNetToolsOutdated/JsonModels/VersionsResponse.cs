@@ -1,10 +1,10 @@
-﻿using Newtonsoft.Json;
+﻿//using Newtonsoft.Json;
 
 namespace DotNetToolsOutdated.JsonModels
 {
     public partial class VersionsResponse
     {
-        [JsonProperty("versions")]
+        //[JsonProperty("versions")]
         public string[] Versions { get; set; }
     }
 }
