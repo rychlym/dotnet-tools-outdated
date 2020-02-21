@@ -51,56 +51,57 @@ namespace DotNetToolsOutdated
             var dirs = Directory.GetDirectories(ToolPath);
             if (dirs != null)
             {
-                var outdatedPkgs = new List<OutdatedResponse>();
+                var pkgs = new List<OutdatedResponse>();
                 // fetch the package name
                 foreach (var dir in dirs)
                 {
                     var pkgName = Path.GetFileName(dir);
                     if (pkgName.Equals(".stage", StringComparison.Ordinal)) continue;
-                    outdatedPkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
+                    pkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
                 }
 
                 var nugetApiGetTasks = new List<Task<HttpResponseMessage>>();
-                foreach (var outdatedPkg in outdatedPkgs)
+                foreach (var pkg in pkgs)
                 {
-                    if (!string.IsNullOrEmpty(PackageName) && !PackageName.Equals(outdatedPkg.PackageName, StringComparison.Ordinal)) continue;
+                    if (!string.IsNullOrEmpty(PackageName) && !PackageName.Equals(pkg.PackageName, StringComparison.Ordinal)) continue;
 
                     // fetch the installed version
-                    var verDirs = Directory.GetDirectories(outdatedPkg.Directory);
+                    var verDirs = Directory.GetDirectories(pkg.Directory);
                     if (verDirs == null)
                     {
-                        Console.WriteLine($"{outdatedPkg.PackageName} package - no sub-dirs about version");
+                        Console.WriteLine($"{pkg.PackageName} package - no sub-dirs about version");
                         continue;
                     }
 
                     if (verDirs.Length > 1)
                     {
-                        Console.WriteLine($"ambiguity for {outdatedPkg.PackageName} package - seems to be more version sub-dirs");
+                        Console.WriteLine($"ambiguity for {pkg.PackageName} package - seems to be more version sub-dirs");
                         continue;
                     }
-                    if (verDirs.Length == 1) outdatedPkg.InstalledVer = Path.GetFileName(verDirs[0]);
+                    if (verDirs.Length == 1) pkg.CurrentVer = Path.GetFileName(verDirs[0]);
 
                     // fetch the available version
-                    var url = $"https://api.nuget.org/v3/registration3/{outdatedPkg.PackageName}/index.json";
+
+                    var url = $"https://api.nuget.org/v3-flatcontainer/{pkg.PackageName}/index.json";
                     var response = await httpClient.GetAsync(url);
-                    var pkgResponse = await response.Content.ReadAsAsync<PackageResponse>();
+                    var versionsResponse = await response.Content.ReadAsAsync<VersionsResponse>();
 
                     if (!response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine($"No results found for {outdatedPkg.PackageName}");
+                        Console.WriteLine($"No results found for {pkg.PackageName}");
                         continue;
                     }
 
-                    outdatedPkg.AvailableVer = pkgResponse.Items[0].Upper;
+                    pkg.AvailableVer = versionsResponse.Versions[versionsResponse.Versions.Length - 1];
 
-                    if (outdatedPkg.IsOutdated)
+                    if (pkg.IsOutdated)
                     {
                         // the package is determined as outdated 
-                        outdatedPkg.ProcessedOkOutdated = true;
+                        pkg.ProcessedOkOutdated = true;
                         resultsCnt++;
                     }
                 }
-                PrintResults(outdatedPkgs);
+                PrintResults(pkgs);
             }
 
         }
@@ -166,7 +167,7 @@ namespace DotNetToolsOutdated
                         jwr.WritePropertyName("name");
                         jwr.WriteValue(outdatedPkg.PackageName);
                         jwr.WritePropertyName("installedVersion");
-                        jwr.WriteValue(outdatedPkg.InstalledVer);
+                        jwr.WriteValue(outdatedPkg.CurrentVer);
                         jwr.WritePropertyName("availableVersion");
                         jwr.WriteValue(outdatedPkg.AvailableVer);
                         jwr.WriteEndObject();
@@ -197,7 +198,7 @@ namespace DotNetToolsOutdated
                         resultsCnt++;
                         xwr.WriteStartElement("package");
                         xwr.WriteAttributeString("name", outdatedPkg.PackageName);
-                        xwr.WriteElementString("installedVersion", outdatedPkg.InstalledVer);
+                        xwr.WriteElementString("installedVersion", outdatedPkg.CurrentVer);
                         xwr.WriteElementString("availableVersion", outdatedPkg.AvailableVer);
                         xwr.WriteEndElement();
                     }
@@ -222,7 +223,7 @@ namespace DotNetToolsOutdated
                 {
                     resultsCnt++;
                     if (maxNameLen < outdatedPkg.PackageName.Length) maxNameLen = outdatedPkg.PackageName.Length;
-                    if (maxInstVerLen < outdatedPkg.InstalledVer.Length) maxInstVerLen = outdatedPkg.InstalledVer.Length;
+                    if (maxInstVerLen < outdatedPkg.CurrentVer.Length) maxInstVerLen = outdatedPkg.CurrentVer.Length;
                     if (maxAvailVerLen < outdatedPkg.AvailableVer.Length) maxAvailVerLen = outdatedPkg.AvailableVer.Length;
                 }
             }
@@ -246,7 +247,7 @@ namespace DotNetToolsOutdated
                     {
                         if (outdatedPkg.ProcessedOkOutdated)
                         {
-                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {outdatedPkg.InstalledVer.PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxAvailVerLen)}");
+                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {outdatedPkg.CurrentVer.PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxAvailVerLen)}");
                         }
                     }
                 }
