@@ -103,7 +103,7 @@ namespace DotNetToolsOutdated
                             {
                                 Console.WriteLine($"No results found for {pkg.PackageName}");
                             }
-                        }, 
+                        },
                         TaskContinuationOptions.OnlyOnRanToCompletion);
                     // on faulted output a message to console
                     pureHttpGetTask.ContinueWith(
