@@ -33,7 +33,7 @@ dotnet tool update -g dotnet-tools-outdated
 ### Help
 
 ```bash
-dotnet-tools-outdated --help
+dotnet-tools-outdated -h
 ```
 
 ```text
@@ -42,13 +42,14 @@ dotnet-tools-outdated
 Usage: dotnet-tools-outdated [options]
 
 Options:
-  --version             Show version information.
-  -?|-h|--help          Show help information.
-  -t|--toolPath         Custom path to the installed .NET CLI packages.
-  -n|--name             Check just one package with the given name.
-  -f|--format           Output format. xml, json, or table are the valid values. (Default: table)
-  -u|--utf8             Output UTF-8 instead of system default encoding. (no bom)
-  -o|--output           Output file path. (Default: stdout)
+  --version       Show version information
+  -?|-h|--help    Show help information
+  -t|--toolPath   Custom location of the (globally) installed .NET Core tools
+  -n|--name       Check just one package with the given name
+  -f|--format     Output format. xml, json, or table are the valid values. (Default: table)
+  -ni|--noIndent  No indent (For the json format so far)
+  -o|--output     Output file path. (Default: stdout)
+  --utf8          Output UTF-8 instead of system default encoding. (no bom)
 
 TODO:
   --incl-prerelease  Include prerelease packages

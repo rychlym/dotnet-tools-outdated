@@ -15,19 +15,19 @@ using Utf8Json;
 namespace DotNetToolsOutdated
 {
     [Command(
-        Name = "dotnet tools outdated",
+        Name = "dotnet-tools-outdated",
         FullName = "dotnet-tools-outdated",
-        Description = "Checks if any of installed .NET Core CLI tools are outdated"
+        Description = "Checks whether any of installed .NET Core tools are outdated."
     )]
     [HelpOption]
     [VersionOptionFromMember(MemberName = nameof(GetVersion))]
     class OutdatedCommand
     {
 
-        [Option("-t|--toolPath", "Custom path to the installed .NET CLI packages.", CommandOptionType.SingleValue)]
+        [Option("-t|--toolPath", "Custom location of the (globally) installed .NET Core tools", CommandOptionType.SingleValue)]
         public string ToolPath { get; set; }
 
-        [Option("-n|--name", "Check just one package with the given name.", CommandOptionType.SingleValue)]
+        [Option("-n|--name", "Check just one package with the given name", CommandOptionType.SingleValue)]
         public string PackageName { get; set; }
 
         [Option("-f|--format", "Output format. xml, json, or table are the valid values. (Default: table)", CommandOptionType.SingleValue)]
@@ -36,11 +36,11 @@ namespace DotNetToolsOutdated
         [Option("-ni|--noIndent", "No indent (For the json format so far)", CommandOptionType.NoValue)]
         public bool NoIndent { get; set; }
 
-        [Option("-u|--utf8", "Output UTF-8 instead of system default encoding. (no bom)", CommandOptionType.NoValue)]
-        public bool IsUtf8 { get; set; }
-
         [Option("-o|--output", "Output file path. (Default: stdout)", CommandOptionType.SingleValue)]
         public string OutputPath { get; set; }
+
+        [Option("--utf8", "Output UTF-8 instead of system default encoding. (no bom)", CommandOptionType.NoValue)]
+        public bool IsUtf8 { get; set; }
 
 
         private async Task OnExecuteAsync()

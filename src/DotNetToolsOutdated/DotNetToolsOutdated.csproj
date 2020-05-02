@@ -7,17 +7,16 @@
     <PackAsTool>true</PackAsTool>
     <AssemblyName>dotnet-tools-outdated</AssemblyName>
     <Description>
-      Checks whether any of currently installed .NET Core global tools are outdated
-
-      Example: dotnet-tools-outdated</Description>
+      Checks whether any of currently installed .NET Core (global) tools are outdated.
+    </Description>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <DebugType>portable</DebugType>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/rychlym/dotnet-tools-outdated</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rychlym/dotnet-tools-outdated</RepositoryUrl>
-    <PackageTags>dotnet core,global tools, outdated</PackageTags>
-    <Version>0.4.0</Version>
+    <PackageTags>dotnet core,tools, outdated</PackageTags>
+    <Version>0.4.1</Version>
     <Authors>Mojmir Rychly</Authors>
     <Company />
     <Product />
