@@ -6,7 +6,7 @@ namespace DotNetToolsOutdated.Models
     internal struct OutdatedResponseProcessing
     {
         public Task ApiGetTaskOkContinued;
-        public Task<VersionsResponse> OkResponseReadTask;
+        public Task<string> OkResponseReadTask;
 
         public bool ProcessedOk;
 

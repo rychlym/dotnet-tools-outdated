@@ -1,4 +1,11 @@
 # Changelog
+## [v0.4.0]
+- make the package smaller by getting rid of references to the Microsoft.AspNet.WebApi.Client, (Newtonsoft.Json) - using the Utf8Json package instead.
+- --noIndent parameter (for the JSON output type)
+
+## [v0.3.0]
+- fix using correct NuGet API call to get the info about latest version
+- fix (and enhance) the versions comparison using Semver for semantic comparison and then fall back with kind of number comparison preceding string comparison
 
 ## [v0.2.0]
 - Improve the performance awaiting all the running task together

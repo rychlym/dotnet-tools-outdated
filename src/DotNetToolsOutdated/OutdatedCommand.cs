@@ -10,7 +10,7 @@ using DotNetToolsOutdated.Extensions;
 using DotNetToolsOutdated.JsonModels;
 using DotNetToolsOutdated.Models;
 using McMaster.Extensions.CommandLineUtils;
-using Newtonsoft.Json;
+using Utf8Json;
 
 namespace DotNetToolsOutdated
 {
@@ -32,6 +32,9 @@ namespace DotNetToolsOutdated
 
         [Option("-f|--format", "Output format. xml, json, or table are the valid values. (Default: table)", CommandOptionType.SingleValue)]
         public string Format { get; set; }
+
+        [Option("-ni|--noIndent", "No indent (For the json format so far)", CommandOptionType.NoValue)]
+        public bool NoIndent { get; set; }
 
         [Option("-u|--utf8", "Output UTF-8 instead of system default encoding. (no bom)", CommandOptionType.NoValue)]
         public bool IsUtf8 { get; set; }
@@ -66,7 +69,7 @@ namespace DotNetToolsOutdated
 
                 // tasks for awaiting when all done together
                 var apiGetResponseOkContinuedTasks = new List<Task>();
-                var pkgResponseReadTasks = new List<Task<VersionsResponse>>();
+                var pkgResponseReadTasks = new List<Task<string>>();
 
                 foreach (var pkg in pkgs)
                 {
@@ -96,7 +99,7 @@ namespace DotNetToolsOutdated
                             HttpResponseMessage response = t.Result;
                             if (response.IsSuccessStatusCode)
                             {
-                                pkg.processing.OkResponseReadTask = response.Content.ReadAsAsync<VersionsResponse>();
+                                pkg.processing.OkResponseReadTask = response.Content.ReadAsStringAsync();
                                 pkgResponseReadTasks.Add(pkg.processing.OkResponseReadTask);
                             }
                             else
@@ -140,9 +143,10 @@ namespace DotNetToolsOutdated
                     }
 
                     // the response read task was completed successfully
-                    var versionsResponse = pkg.processing.OkResponseReadTask.Result;
+                    var versionsResponseStr = pkg.processing.OkResponseReadTask.Result;
 
                     // set the available version
+                    var versionsResponse = JsonSerializer.Deserialize<VersionsResponse>(versionsResponseStr);
                     pkg.AvailableVer = versionsResponse.Versions[versionsResponse.Versions.Length - 1];
 
                     // since now all is fetched ok
@@ -206,34 +210,65 @@ namespace DotNetToolsOutdated
 
         private void PrintJson(List<OutdatedResponse> pkgs)
         {
-            var resultsCnt = 0;
-
+            var outEncoding = GetOutputEncoding();
             using (var outStream = OpenOutputStream(true))
-            using (var wr = new StreamWriter(outStream, GetOutputEncoding()))
-            using (var jwr = new JsonTextWriter(wr))
+            using (var wr = new StreamWriter(outStream, outEncoding))
             {
-                jwr.Indentation = 2;
-                jwr.Formatting = Newtonsoft.Json.Formatting.Indented;
-                jwr.WriteStartObject();
-                jwr.WritePropertyName("outdatedPackages");
-                jwr.WriteStartArray();
-                foreach (var pkg in pkgs)
+                var outdatedPackages = new { outdatedPackages = pkgs };
+                var bytes = JsonSerializer.Serialize(outdatedPackages);
+                if (NoIndent)
                 {
-                    if (pkg.processing.ProcessedOkOutdated)
+                    if (outEncoding.WebName == "utf-8")
                     {
-                        resultsCnt++;
-                        jwr.WriteStartObject();
-                        jwr.WritePropertyName("name");
-                        jwr.WriteValue(pkg.PackageName);
-                        jwr.WritePropertyName("currentVersion");
-                        jwr.WriteValue(pkg.CurrentVer);
-                        jwr.WritePropertyName("availableVersion");
-                        jwr.WriteValue(pkg.AvailableVer);
-                        jwr.WriteEndObject();
+                        wr.Write(bytes);
+                    }
+                    else
+                    {
+                        wr.Write(Encoding.UTF8.GetString(bytes));
                     }
                 }
-                jwr.WriteEndArray();
-                jwr.WriteEndObject();
+                else
+                {
+                    var outputStr = JsonSerializer.PrettyPrint(bytes);
+                    wr.Write(outputStr);
+                }
+
+                //var jwr = new JsonWriter();
+                ////jwr.Indentation = 2;
+                ////jwr.Formatting = Newtonsoft.Json.Formatting.Indented;
+                //jwr.WriteBeginObject();
+                //jwr.WritePropertyName("outdatedPackages");
+                //jwr.WriteBeginArray();
+                //foreach (var pkg in pkgs)
+                //{
+                //    if (pkg.processing.ProcessedOkOutdated)
+                //    {
+                //        resultsCnt++;
+                //        jwr.WriteBeginObject();
+                //        jwr.WritePropertyName("name");
+                //        jwr.WriteString(pkg.PackageName);
+                //        jwr.WriteValueSeparator();
+                //        jwr.WritePropertyName("currentVersion");
+                //        jwr.WriteString(pkg.CurrentVer);
+                //        jwr.WriteValueSeparator();
+                //        jwr.WritePropertyName("availableVersion");
+                //        jwr.WriteString(pkg.AvailableVer);
+                //        jwr.WriteValueSeparator();
+                //        jwr.WriteEndObject();
+                //        jwr.WriteValueSeparator();
+                //    }
+                //}
+                //jwr.WriteEndArray();
+                //jwr.WriteEndObject();
+                //if (NoIndent)
+                //{
+                //    wr.Write(jwr.ToString());
+                //}
+                //else
+                //{
+                //    var outputStr = JsonSerializer.PrettyPrint(jwr.ToString());
+                //    wr.Write(outputStr);
+                //}
             }
         }
 
@@ -312,7 +347,7 @@ namespace DotNetToolsOutdated
                 }
             }
         }
-
+ 
 
         Encoding GetOutputEncoding()
             => IsUtf8 ? new UTF8Encoding(false) : Encoding.Default;
@@ -321,4 +356,6 @@ namespace DotNetToolsOutdated
         private static string GetVersion()
             => typeof(OutdatedCommand).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
     }
+
+
 }
