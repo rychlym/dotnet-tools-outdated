@@ -16,7 +16,7 @@ However, the .NET Core command-line tools do not provide a built-in way for you 
 
 ## Installation
 
-Download and install the [.NET Core 2.1 SDK or .NET Core 3.1 SDK](https://www.microsoft.com/net/download) or newer. Once installed, run the following command:
+Download and install the [.NET Core 2.1 SDK, .NET Core 3.1 SDK or .NET 5.0 SDK](https://www.microsoft.com/net/download) or newer. Once installed, run the following command:
 
 ```bash
 dotnet tool install -g dotnet-tools-outdated
