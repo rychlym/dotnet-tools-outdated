@@ -6,7 +6,7 @@ namespace DotNetToolsOutdated.JsonModels
 {
     public partial class VersionsResponse
     {
-        [DataMember(Name = "versions")]
+        [DataMember(Name = "data")]
         public string[] Versions { get; set; }
     }
 }

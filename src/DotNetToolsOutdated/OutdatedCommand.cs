@@ -43,6 +43,10 @@ namespace DotNetToolsOutdated
         public bool IsUtf8 { get; set; }
 
 
+        [Option("-pre|--prerelease", "Check also pre-released versions", CommandOptionType.NoValue)]
+        public bool CheckPrelease { get; set; }
+
+
         private async Task OnExecuteAsync()
         {
             if (ToolPath == null)
@@ -71,6 +75,8 @@ namespace DotNetToolsOutdated
                 var apiGetResponseOkContinuedTasks = new List<Task>();
                 var pkgResponseReadTasks = new List<Task<string>>();
 
+                // prerelease parameter value
+                var prereleasePar = CheckPrelease ? "true" : "false";
                 foreach (var pkg in pkgs)
                 {
                     if (!string.IsNullOrEmpty(PackageName) && !PackageName.Equals(pkg.PackageName, StringComparison.Ordinal)) continue;
@@ -91,7 +97,7 @@ namespace DotNetToolsOutdated
                     if (verDirs.Length == 1) pkg.CurrentVer = Path.GetFileName(verDirs[0]);
 
                     // start tasks for fetching the available version
-                    var url = $"https://api.nuget.org/v3-flatcontainer/{pkg.PackageName}/index.json";
+                    var url = $"https://api-v2v3search-0.nuget.org/autocomplete?id={pkg.PackageName}&prerelease={prereleasePar}";
                     var pureHttpGetTask = httpClient.GetAsync(url);
                     pkg.processing.ApiGetTaskOkContinued = pureHttpGetTask.ContinueWith(t =>
                         {
