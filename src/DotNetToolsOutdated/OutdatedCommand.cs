@@ -58,6 +58,7 @@ namespace DotNetToolsOutdated
             var httpClient = new HttpClient();
             var resultsCnt = 0;
             var outdatedCnt = 0;
+            var unlistedCnt = 0;
 
             var dirs = Directory.GetDirectories(ToolPath);
             if (dirs != null)
@@ -153,7 +154,7 @@ namespace DotNetToolsOutdated
 
                     // set the available version
                     var versionsResponse = JsonSerializer.Deserialize<VersionsResponse>(versionsResponseStr);
-                    pkg.AvailableVer = versionsResponse.Versions[versionsResponse.Versions.Length - 1];
+                    pkg.AvailableVer = (versionsResponse.Versions.Length > 0) ? versionsResponse.Versions[versionsResponse.Versions.Length - 1] : "";
 
                     // since now all is fetched ok
                     pkg.processing.ProcessedOk = true;
@@ -163,6 +164,7 @@ namespace DotNetToolsOutdated
                     {
                         // the package is determined as outdated 
                         pkg.processing.ProcessedOkOutdated = true;
+                        if (pkg.BecomeUnlisted) unlistedCnt++;
                         outdatedCnt++;
                     }
                 }

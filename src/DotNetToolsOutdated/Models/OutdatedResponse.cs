@@ -16,7 +16,9 @@ namespace DotNetToolsOutdated.Models
 
         internal OutdatedResponseProcessing processing;
 
-        public bool IsOutdated => CompareVersions(CurrentVer, AvailableVer) == -1;
+        public bool IsOutdated => CompareVersions(CurrentVer, AvailableVer) == -1 || BecomeUnlisted;
+
+        public bool BecomeUnlisted => AvailableVer == "";
 
 
         public static int CompareVersions(string ver1, string ver2)
