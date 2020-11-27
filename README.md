@@ -42,17 +42,16 @@ dotnet-tools-outdated
 Usage: dotnet-tools-outdated [options]
 
 Options:
-  --version       Show version information
-  -?|-h|--help    Show help information
-  -t|--toolPath   Custom location of the (globally) installed .NET Core tools
-  -n|--name       Check just one package with the given name
-  -f|--format     Output format. xml, json, or table are the valid values. (Default: table)
-  -ni|--noIndent  No indent (For the json format so far)
-  -o|--output     Output file path. (Default: stdout)
-  --utf8          Output UTF-8 instead of system default encoding. (no bom)
+  --version         Show version information
+  -?|-h|--help      Show help information
+  -t|--toolPath     Custom location of the (globally) installed .NET Core tools
+  -n|--name         Check just one package with the given name
+  -f|--format       Output format. xml, json, or table are the valid values. (Default: table)
+  -ni|--noIndent    No indent (For the json format so far)
+  -o|--output       Output file path. (Default: stdout)
+  -pre|--prerelease Check also pre-released versions"
+  --utf8            Output UTF-8 instead of system default encoding. (no bom)
 
-TODO:
-  --incl-prerelease  Include prerelease packages
 ```
 
 ### Outdated tools
