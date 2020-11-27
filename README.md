@@ -49,7 +49,7 @@ Options:
   -f|--format       Output format. xml, json, or table are the valid values. (Default: table)
   -ni|--noIndent    No indent (For the json format so far)
   -o|--output       Output file path. (Default: stdout)
-  -pre|--prerelease Check also pre-released versions"
+  -pre|--prerelease Check also pre-released versions
   --utf8            Output UTF-8 instead of system default encoding. (no bom)
 
 ```
