@@ -9,10 +9,10 @@ dotnet-tools-outdated
 
 ## Overview
 
-It might be handy to find out whether newer versions of the .NET Core global tools currently installed on your machine is available.
-However, the .NET Core command-line tools do not provide a built-in way for you to report on outdated NuGet packages of the .NET Core global tools.
+It might be handy to find out whether newer versions of the (.NET Core/ .NET 5) global tools currently installed on your machine is available.
+However, the .NET command-line tools do not provide a built-in way for you to report on outdated NuGet packages of the global tools.
 
-**dotnet-tools-outdated** is a .NET Core Global tool that allows you to quickly report on any outdated .NET Core global tools currently installed on your machine. 
+**dotnet-tools-outdated** is a .NET Core / NET 5 global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
 
 ## Installation
 

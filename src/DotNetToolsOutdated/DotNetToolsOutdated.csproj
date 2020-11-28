@@ -7,8 +7,8 @@
     <PackAsTool>true</PackAsTool>
     <AssemblyName>dotnet-tools-outdated</AssemblyName>
     <Description>
-      Checks whether any of currently installed .NET Core (global) tools are outdated.
-    </Description>
+	    Checks whether any of currently installed global tools is outdated.
+	</Description>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <ServerGarbageCollection>true</ServerGarbageCollection>
     <DebugType>portable</DebugType>
