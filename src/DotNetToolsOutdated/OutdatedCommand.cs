@@ -17,7 +17,8 @@ namespace DotNetToolsOutdated
     [Command(
         Name = "dotnet-tools-outdated",
         FullName = "dotnet-tools-outdated",
-        Description = "Checks whether any of installed .NET Core tools are outdated."
+        Description = "Checks whether any of installed .NET Core tools are outdated.",
+        ExtendedHelpText = "\nThe outdated packages can be re-installed by dotnet tool uninstall -g package_name followed by dotnet tool install -g package_name command."
     )]
     [HelpOption]
     [VersionOptionFromMember(MemberName = nameof(GetVersion))]
