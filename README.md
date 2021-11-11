@@ -9,14 +9,14 @@ dotnet-tools-outdated
 
 ## Overview
 
-It might be handy to find out whether newer versions of the (.NET Core/ .NET 5) global tools currently installed on your machine is available.
+It might be handy to find out whether newer versions of the (.NET Core/ .NET 6) global tools currently installed on your machine is available.
 However, the .NET command-line tools do not provide a built-in way for you to report on outdated NuGet packages of the global tools.
 
-**dotnet-tools-outdated** is a .NET Core / NET 5 global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
+**dotnet-tools-outdated** is a .NET Core (3.1) / NET 6 global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
 
 ## Installation
 
-Download and install the [.NET Core 2.1 SDK, .NET Core 3.1 SDK or .NET 5.0 SDK](https://www.microsoft.com/net/download) or newer. Once installed, run the following command:
+Download and install the [.NET Core 3.1 SDK or .NET 5.0 SDK](https://www.microsoft.com/net/download) or newer. Once installed, run the following command:
 
 ```bash
 dotnet tool install -g dotnet-tools-outdated
@@ -56,21 +56,30 @@ Options:
 
 ### Outdated tools
 
-Note: The output is empty in case of all the installed packages up-to date.
+Notes: 
+ - the output is empty in case of all the installed packages up-to date
+ - in case of unlisted (deprecated) NuGet package, it does not have the "Available" version column value (e.g. [dotnet-try](https://www.nuget.org/packages/dotnet-try/) below)
 
 ```bash
 dotnet-tools-outdated
 ```
 
 ```text
-Package Id                         Current Available
-----------------------------------------------------
-findref                            0.2.0   0.2.1
-project2015to2017.migrate2017.tool 3.0.0   4.1.2
-volo.abp.cli                       2.0.0   2.1.0
+Package Id                         Current     Available
+---------------------------------------------------------
+dotnet-tools-outdated              0.5.2       0.6.0
+dotnet-try                         1.0.19553.4
+try-convert                        0.7.210903  0.9.232202
+upgrade-assistant                  0.2.212405  0.3.255803
 ```
 
 ### Outdated tools in the json format
+
+Notes: 
+ - as seen bellow it shows much more info about installed global tools including these which aren't updated. 
+   - IsOutdated informs whether the installed golbal tool is/is not outdated
+   - BecomeUnisted informs the installed golbal tool is/is not set as deprecated, alias unlisted at the [NuGet repo](https://www.nuget.org))
+ - in case of unlisted (deprecated) NuGet package, it does not have the "Available" version column value (e.g. [dotnet-try](https://www.nuget.org/packages/dotnet-try/) below)
 
 ```bash
 dotnet-tools-outdated -f json
@@ -79,21 +88,53 @@ dotnet-tools-outdated -f json
 ```text
 {
   "outdatedPackages": [
-
     {
-      "name": "findref",
-      "currentVersion": "0.2.0",
-      "availableVersion": "0.2.1"
+      "IsOutdated": false,
+      "BecomeUnlisted": false,
+      "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\apiport",
+      "PackageName": "apiport",
+      "CurrentVer": "2.8.14",
+      "AvailableVer": "2.8.14"
     },
     {
-      "name": "project2015to2017.migrate2017.tool",
-      "currentVersion": "3.0.0",
-      "availableVersion": "4.1.2"
+      "IsOutdated": true,
+      "BecomeUnlisted": false,
+      "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\dotnet-tools-outdated",
+      "PackageName": "dotnet-tools-outdated",
+      "CurrentVer": "0.5.2",
+      "AvailableVer": "0.6.0"
     },
     {
-      "name": "volo.abp.cli",
-      "currentVersion": "1.0.0",
-      "availableVersion": "2.0.0"
+      "IsOutdated": true,
+      "BecomeUnlisted": true,
+      "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\dotnet-try",
+      "PackageName": "dotnet-try",
+      "CurrentVer": "1.0.19553.4",
+      "AvailableVer": ""
+    },
+    {
+      "IsOutdated": false,
+      "BecomeUnlisted": false,
+      "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\project2015to2017.migrate2019.tool",
+      "PackageName": "project2015to2017.migrate2019.tool",
+      "CurrentVer": "4.1.3",
+      "AvailableVer": "4.1.3"
+    },
+    {
+      "IsOutdated": true,
+      "BecomeUnlisted": false,
+      "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\try-convert",
+      "PackageName": "try-convert",
+      "CurrentVer": "0.7.210903",
+      "AvailableVer": "0.9.232202"
+    },
+    {
+      "IsOutdated": true,
+      "BecomeUnlisted": false,
+      "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\upgrade-assistant",
+      "PackageName": "upgrade-assistant",
+      "CurrentVer": "0.2.212405",
+      "AvailableVer": "0.3.255803"
     }
   ]
 }

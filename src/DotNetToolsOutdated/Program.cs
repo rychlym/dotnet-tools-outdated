@@ -5,12 +5,7 @@ namespace DotNetToolsOutdated
 {
     class Program
     {
-        static int Main(string[] args)
-        {
-            return MainAsync(args).GetAwaiter().GetResult();
-        }
-
-        private static async Task<int> MainAsync(string[] args)
+        static async Task<int> Main(string[] args)
         {
             return await CommandLineApplication.ExecuteAsync<OutdatedCommand>(args);
         }
