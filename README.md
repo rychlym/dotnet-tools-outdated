@@ -9,20 +9,58 @@ dotnet-tools-outdated
 
 ## Overview
 
-It might be handy to find out whether newer versions of the (.NET Core/ .NET 6) global tools currently installed on your machine is available.
+It might be handy to find out whether newer versions of the (.NET Core/ .NET 5/6) global tools currently installed on your machine is available.
 However, the .NET command-line tools do not provide a built-in way for you to report on outdated NuGet packages of the global tools.
 
-**dotnet-tools-outdated** is a .NET Core (3.1) / NET 6 global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
+**dotnet-tools-outdated** is a  global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
+
+
+## Overview Detail
+
+The out-of-box command for listing all the global tools is typed as follows:
+
+```bash
+dotnet tool list -g
+```
+
+```text
+Package Id                              Version          Commands
+------------------------------------------------------------------------------
+apiport                                 2.8.14           ApiPort
+dotnet-tools-outdated                   0.5.2            dotnet-tools-outdated
+dotnet-try                              1.0.19553.4      dotnet-try
+project2015to2017.migrate2019.tool      4.1.3            dotnet-migrate-2019
+try-convert                             0.7.210903       try-convert
+upgrade-assistant                       0.2.212405       upgrade-assistant
+```
+
+It greatly tells about the installed version. Hovewer, it does not inform if a package is outdated
+
+The **dotnet-tools-outdated** provides such info just by typing: 
+```bash
+dotnet-tools-outdated
+```
+
+```text
+Package Id                         Current     Available
+---------------------------------------------------------
+dotnet-tools-outdated              0.5.2       0.6.0
+dotnet-try                         1.0.19553.4
+try-convert                        0.7.210903  0.9.232202
+upgrade-assistant                  0.2.212405  0.3.255803
+```
+
+It lists just the packages which are outdated in a meaning, that it can be updated to a higher version or are obsolete (marked as unlisted - e.g. dotnet-try above).
 
 ## Installation
 
-Download and install the [.NET Core 3.1 SDK or .NET 5.0 SDK](https://www.microsoft.com/net/download) or newer. Once installed, run the following command:
+Download and install the [.NET Core 3.1 SDK or .NET 6 SDK](https://www.microsoft.com/net/download) or newer. Once installed, run the following command:
 
 ```bash
 dotnet tool install -g dotnet-tools-outdated
 ```
 
-If you already have a previous version of **dotnet-tools-outdated** installed, you can upgrade to the latest version using the following command:
+If you already have a previous version of **dotnet-tools-outdated** installed, you can uptdate to the latest version using the following command:
 
 ```bash
 dotnet tool update -g dotnet-tools-outdated
@@ -161,6 +199,16 @@ Output is located in ```src/DotNetToolsOutdated/nupkg```
 ```bash
 dotnet tool uninstall -g dotnet-tools-outdated
 ```
+
+## Common Release Notes
+
+The latest versions (>= 0.6.0) of the **dotnet-tools-outdated** are going to be ported just to the .NET Core (3.1) / .NET 6, which are in the LTS scheme.
+This is in behalf of minimalizing the size of the package and supposing folks use this usually care about the updated versions of the global tools, 
+So thy don't' need the older version of the .NET Core 2.1.
+(At this moment, you can stay with 0.5.x version if you need to run it in the .NET Core 2.1. There is no functionality change/bug fixings in the 0.6.0 comparing the 0.5.2)
+
+This aproach could continue. If the new .NET 7 comes into place, it can be ported into it and then further .NET 8 (LTS) release similarly run just under .NET 6 and .NET 8
+
 
 ## Useful Links
 
