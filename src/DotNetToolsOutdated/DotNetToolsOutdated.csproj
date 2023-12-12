@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>netcoreapp3.1;net6.0</TargetFrameworks>
+    <TargetFrameworks>netcoreapp3.1;net6.0;net7.0;net8.0</TargetFrameworks>
     <IsPackable>true</IsPackable>
     <PackAsTool>true</PackAsTool>
     <AssemblyName>dotnet-tools-outdated</AssemblyName>
@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/rychlym/dotnet-tools-outdated</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rychlym/dotnet-tools-outdated</RepositoryUrl>
     <PackageTags>dotnet core,tools, outdated</PackageTags>
-    <Version>0.6.0</Version>
+    <Version>0.6.1</Version>
     <Authors>Mojmir Rychly</Authors>
     <Company />
     <Product />
