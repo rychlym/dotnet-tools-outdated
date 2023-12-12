@@ -55,7 +55,7 @@ Or the output is just empty, if there is no outdated global tool.
 
 ## Installation
 
-Download and install the [.NET Core 3.1 SDK or .NET 6 SDK](https://www.microsoft.com/net/download) currently in LTS (Long Term Support) or newer (or between). 
+Download and install the [.NET 6 SDK or .NET 8 SDK](https://www.microsoft.com/net/download) currently in LTS (Long Term Support) or newer (or between). 
 Once installed, run the following command:
 
 ```bash
@@ -68,7 +68,7 @@ If you already have a previous version of **dotnet-tools-outdated** installed, y
 dotnet tool update -g dotnet-tools-outdated
 ```
 
-Supposing rarelly, but in case of the older [.NET Core SDK](https://dotnet.microsoft.com/download/dotnet) (up to .NET Core 2.1), please install/update to the version lesser than 0.6.0.
+Supposing rarelly, but in case of the older [.NET Core SDK](https://dotnet.microsoft.com/download/dotnet) (up to .NET Core 2.1), please install/update to the version lesser than 0.6.2.
 e.g:
 
 ```bash
@@ -115,7 +115,7 @@ dotnet-tools-outdated
 ```text
 Package Id                         Current     Available
 ---------------------------------------------------------
-dotnet-tools-outdated              0.5.2       0.6.0
+dotnet-tools-outdated              0.5.2       0.6.2
 dotnet-try                         1.0.19553.4
 try-convert                        0.7.210903  0.9.232202
 upgrade-assistant                  0.2.212405  0.3.255803
@@ -150,7 +150,7 @@ dotnet-tools-outdated -f json
       "Directory": "C:\\Users\\user\\.dotnet\\tools\\.store\\dotnet-tools-outdated",
       "PackageName": "dotnet-tools-outdated",
       "CurrentVer": "0.5.2",
-      "AvailableVer": "0.6.0"
+      "AvailableVer": "0.6.2"
     },
     {
       "IsOutdated": true,
@@ -212,12 +212,15 @@ dotnet tool uninstall -g dotnet-tools-outdated
 
 ## Common Release Notes
 
-The latest versions (>= 0.6.0) of the **dotnet-tools-outdated** are going to be ported just to the .NET Core (3.1) / .NET 6, which are in the [LTS scheme](https://dotnet.microsoft.com/platform/support/policy/dotnet-core).
-This is in behalf of minimizing the size of the package and supposing folks use this usually care about the updated versions of the global tools, 
-So thy don't' need the older version of the .NET Core 2.1.
-(At this moment, you can stay with 0.5.x version if you need to run it in the .NET Core 2.1. There is no functionality change/bug fixings in the 0.6.0 comparing the 0.5.2).
+Since the versions 0.6.0> the **dotnet-tools-outdated** are going to be ported for the available .NET [LTS scheme](https://dotnet.microsoft.com/platform/support/policy/dotnet-core)
+. (Currently the .NET 6 and .NET 8)
+This is on behalf of minimizing the size of the package. It is also supposed, folks who using this usually care about the updated versions of the global tools, 
+and  don't' need the older version of the .NET SDK.
 
-This approach could continue. If the new .NET 7 comes into place, it can be ported into it and then further .NET 8 (LTS) release similarly run just under .NET 6 and .NET 8.
+However if a relly a neeed of environment with an older .NET SDK, then please install the following lower version 
+(There is no functionality change/bug fixings in the current version  comparing up to the 0.5.2 version)
+- 0.6.0 - if a need to run under the .NET 3.1 (and no .NET 6> SDK is present.)
+- 0.5.x - if a need to run under the .NET Core 2.1
 
 
 ## Useful Links
