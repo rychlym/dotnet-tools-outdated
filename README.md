@@ -67,6 +67,10 @@ Or the output is just empty, if there is no outdated global tool.
 In a case of running the **dotnet-tools-outdated** from a directory covered by localy installed .NET tools, the locally installed tools are also checked.
 If the local tools are outdated, the console shows an additional and slightly different table preceding the table with the globally installed tools.
 
+```bash
+dotnet-tools-outdated -s
+```
+(the -s option shows one statistics row at the end)
 ```text
 Package Id            Current Available Manifest
 -----------------------------------------------------------------------------------------------------
@@ -77,7 +81,7 @@ Package Id            Current Available
 ---------------------------------------
 dotnet-tools-outdated 0.6.1   0.7.0
 
-Checked 2 local and 3 global packages. Found 3 outdated packages.
+2 local and 3 global packages available. Found 3 outdated packages.
 ```
 The table of locally installed tools is recognizable by the additional Manifest table column.  
 The locally installed tools are always tight with the .config/dotnet-tools.json manifest file somewhere in the current directory structure - to get to more detail, please check the 
@@ -103,7 +107,7 @@ Supposing rarelly, but in case of the older [.NET Core SDK](https://dotnet.micro
 e.g:
 
 ```bash
-dotnet tool install -g --version 0.6.2 dotnet-tools-outdated
+dotnet tool install -g --version 0.5.2 dotnet-tools-outdated
 ```
 
 
