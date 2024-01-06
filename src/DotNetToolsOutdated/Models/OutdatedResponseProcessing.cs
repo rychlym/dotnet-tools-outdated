@@ -1,15 +1,18 @@
 ﻿using System.Threading.Tasks;
-using DotNetToolsOutdated.JsonModels;
 
-namespace DotNetToolsOutdated.Models
+namespace DotNetToolsOutdated.Models;
+
+internal class OutdatedResponseProcessing
 {
-    internal struct OutdatedResponseProcessing
-    {
-        public Task ApiGetTaskOkContinued;
-        public Task<string> OkResponseReadTask;
+    public Task ApiGetTaskOkContinued;
+    public Task<string> OkResponseReadTask;
 
-        public bool ProcessedOk;
+    public string[] ResultVersionsResponse;
+    public string ResultAvailableVer => (ResultVersionsResponse?.Length > 0) ? ResultVersionsResponse[^1] : "";
+}
 
-        public bool ProcessedOkOutdated;
-    }
+internal struct OutdatedResponseProcessingResult
+{
+    public bool ProcessedOk;
+    public bool ProcessedOkOutdated;
 }

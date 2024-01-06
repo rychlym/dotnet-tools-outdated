@@ -7,7 +7,7 @@
     <PackAsTool>true</PackAsTool>
     <AssemblyName>dotnet-tools-outdated</AssemblyName>
     <Description>
-	    Checks whether any of currently installed global tools is outdated.
+		Checks whether any of installed .NET command-line tools is outdated.
 	</Description>
     <PreserveCompilationContext>true</PreserveCompilationContext>
     <ServerGarbageCollection>true</ServerGarbageCollection>
@@ -16,7 +16,7 @@
     <PackageProjectUrl>https://github.com/rychlym/dotnet-tools-outdated</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rychlym/dotnet-tools-outdated</RepositoryUrl>
     <PackageTags>dotnet core,tools, outdated</PackageTags>
-    <Version>0.6.2</Version>
+    <Version>0.7.0</Version>
     <Authors>Mojmir Rychly</Authors>
     <Company />
     <Product />
@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
-    <PackageReference Include="Semver" Version="2.0.6" />
+    <PackageReference Include="Semver" Version="2.3.0" />
     <PackageReference Include="Cryptisk.Utf8Json" Version="1.4.0" />
   </ItemGroup>
 </Project>

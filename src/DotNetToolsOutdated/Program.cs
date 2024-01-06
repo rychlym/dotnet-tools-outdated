@@ -1,13 +1,12 @@
 ﻿using System.Threading.Tasks;
 using McMaster.Extensions.CommandLineUtils;
 
-namespace DotNetToolsOutdated
+namespace DotNetToolsOutdated;
+
+class Program
 {
-    class Program
+    static async Task<int> Main(string[] args)
     {
-        static async Task<int> Main(string[] args)
-        {
-            return await CommandLineApplication.ExecuteAsync<OutdatedCommand>(args);
-        }
+        return await CommandLineApplication.ExecuteAsync<OutdatedCommand>(args);
     }
 }
