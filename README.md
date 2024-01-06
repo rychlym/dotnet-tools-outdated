@@ -89,7 +89,7 @@ The locally installed tools are always tight with the .config/dotnet-tools.json 
 
 ## Installation
 
-Download and install the [.NET 6 SDK or .NET 8 SDK](https://www.microsoft.com/net/download) currently in LTS (Long Term Support) or newer (or between). 
+Download and install the [.NET 6 SDK or .NET 8 SDK](https://www.microsoft.com/net/download) currently in LTS (Long Term Support) or a newer (or a non LTS between). 
 Once installed, run the following command:
 
 ```bash
