@@ -61,8 +61,8 @@ upgrade-assistant                  0.2.212405  0.3.255803
 It lists just the packages which are outdated in a meaning, that it can be updated to a higher version or are obsolete (marked as unlisted - e.g. dotnet-try above). 
 Or the output is just empty, if there is no outdated global tool.
 
-## Locally installed .NET command-line tools
 <span name="localy-installed-net-command-line-tools"></span>
+## Locally installed .NET command-line tools
 
 In a case of running the **dotnet-tools-outdated** from a directory covered by localy installed .NET tools, the locally installed tools are also checked.
 If the local tools are outdated, the console shows an additional and slightly different table preceding the table with the globally installed tools.
