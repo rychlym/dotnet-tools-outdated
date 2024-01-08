@@ -15,8 +15,8 @@
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/rychlym/dotnet-tools-outdated</PackageProjectUrl>
     <RepositoryUrl>https://github.com/rychlym/dotnet-tools-outdated</RepositoryUrl>
-    <PackageTags>dotnet core,tools, outdated</PackageTags>
-    <Version>0.7.0</Version>
+    <PackageTags>dotnet core,tools,outdated,global,local</PackageTags>
+    <Version>0.7.1</Version>
     <Authors>Mojmir Rychly</Authors>
     <Company />
     <Product />

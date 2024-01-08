@@ -37,7 +37,7 @@ class OutdatedCommand
     [Option("-ni|--noIndent", "No indenttation (for the json and xml format)", CommandOptionType.NoValue)]
     public bool NoIndent { get; set; }
 
-    [Option("-o|--otput", "Output file path. (Default: stdout)", CommandOptionType.SingleValue)]
+    [Option("-o|--output", "Output file path. (Default: stdout)", CommandOptionType.SingleValue)]
     public string OutputPath { get; set; }
 
     [Option("--utf8", "Output with UTF-8 instead of the system default encoding. (no bom)", CommandOptionType.NoValue)]

@@ -134,7 +134,7 @@ Options:
   --outPkgRegardlessState  Otput the both up-to-date/outdated state packages for the json and xml format. (The table
                            format can show only the outdated packages)
   -ni|--noIndent           No indenttation (for the json and xml format)
-  -o|--otput               Output file path. (Default: stdout)
+  -o|--output              Output file path. (Default: stdout)
   --utf8                   Output with UTF-8 instead of the system default encoding. (no bom)
   -pre|--prerelease        Check also pre-released versions
   -s|--showStat            Show statistics info row (sums of available and outdated packages)
