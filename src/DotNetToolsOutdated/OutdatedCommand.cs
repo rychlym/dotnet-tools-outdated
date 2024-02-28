@@ -9,6 +9,7 @@ using System.Xml;
 using DotNetToolsOutdated.Extensions;
 using DotNetToolsOutdated.JsonModels;
 using DotNetToolsOutdated.Models;
+using DotNetToolsOutdated.Ut;
 using McMaster.Extensions.CommandLineUtils;
 using Utf8Json;
 using Utf8Json.Resolvers;
@@ -91,7 +92,7 @@ class OutdatedCommand
                 }
             }
 
-            currentDir = IsRootPath(currentDir) ? null : Path.GetDirectoryName(currentDir);
+            currentDir = StringUt.IsRootPath(currentDir) ? null : Path.GetDirectoryName(currentDir);
         }
         var localPackagesCount = pkgs.Count;
 
@@ -337,7 +338,7 @@ class OutdatedCommand
             xwr.WriteStartDocument();
             xwr.WriteStartElement("dotnet-tools-outdated");
             xwr.WriteAttributeString("version", GetVersion());
-            xwr.WriteAttributeString("outPkgRegardlessState", ToNerdCaps(OutPkgRegardlessState.ToString()));
+            xwr.WriteAttributeString("outPkgRegardlessState", StringUt.ToNerdCaps(OutPkgRegardlessState.ToString()));
             foreach (var pkg in pkgs)
             {
                 if (IsPackageToPrintOut(pkg))
@@ -345,16 +346,16 @@ class OutdatedCommand
                     resultsCnt++;
                     xwr.WriteStartElement("package");
                     xwr.WriteAttributeString("name", pkg.PackageName);
-                    xwr.WriteAttributeString("outdated", ToNerdCaps(pkg.IsOutdated.ToString()));
+                    xwr.WriteAttributeString("outdated", StringUt.ToNerdCaps(pkg.IsOutdated.ToString()));
                     xwr.WriteElementString("currentVer", pkg.CurrentVer);
                     xwr.WriteElementString("availableVer", pkg.AvailableVer);
-                    xwr.WriteElementString("becomeUnlisted", ToNerdCaps(pkg.BecomeUnlisted.ToString()));
+                    xwr.WriteElementString("becomeUnlisted", StringUt.ToNerdCaps(pkg.BecomeUnlisted.ToString()));
                     xwr.WriteElementString("directory", pkg.Directory);
                     if (pkg.LocalManifestRefInfo != null)
                     {
                         xwr.WriteStartElement("localManifestRefInfo");
                         xwr.WriteAttributeString("filePath", pkg.LocalManifestRefInfo.FilePath);
-                        xwr.WriteAttributeString("isRoot", ToNerdCaps(pkg.LocalManifestRefInfo.IsRoot.ToString()));
+                        xwr.WriteAttributeString("isRoot", StringUt.ToNerdCaps(pkg.LocalManifestRefInfo.IsRoot.ToString()));
                         xwr.WriteAttributeString("version", pkg.LocalManifestRefInfo.Version.ToString());
                         xwr.WriteEndElement();
                     }
@@ -467,7 +468,6 @@ class OutdatedCommand
         }
     }
 
-
     Encoding GetOutputEncoding()
         => IsUtf8 ? new UTF8Encoding(false) : Encoding.Default;
 
@@ -476,18 +476,5 @@ class OutdatedCommand
         var infoVersion = typeof(OutdatedCommand).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion;
         var plusIndex = infoVersion.IndexOf('+');
         return plusIndex == -1 ? infoVersion : infoVersion[..plusIndex];
-    }
-
-    private static bool IsRootPath(string path)
-    {
-        var rootPath = Path.GetPathRoot(path);
-        return rootPath == path;
-    }
-
-    private static string ToNerdCaps(string input)
-    {
-        var sb = new StringBuilder(input);
-        sb[0] = char.ToLower(input[0]);
-        return sb.ToString();
     }
 }
