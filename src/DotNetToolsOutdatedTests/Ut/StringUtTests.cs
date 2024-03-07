@@ -7,7 +7,7 @@ namespace DotNetToolsOutdated.Ut.Tests
         [Fact(DisplayName = "ToNerdCaps null input returns null")]
         public void ToNerdCaps_Null_Empty()
         {
-            var result = StringUt.ToNerdCaps(null);
+            var result = Utils.ToNerdCaps(null);
 
             Assert.Null(result);
         }
@@ -15,7 +15,7 @@ namespace DotNetToolsOutdated.Ut.Tests
         [Fact(DisplayName = "ToNerdCaps empty input returns empty string")]
         public void ToNerdCaps_Empty_Empty()
         {
-            var result = StringUt.ToNerdCaps(string.Empty);
+            var result = Utils.ToNerdCaps(string.Empty);
 
             Assert.Empty(result);
         }
@@ -27,7 +27,7 @@ namespace DotNetToolsOutdated.Ut.Tests
         [InlineData("z")]
         public void ToNerdCaps_OneCharNonCap_Same(string s)
         {
-            var result = StringUt.ToNerdCaps(s);
+            var result = Utils.ToNerdCaps(s);
 
             Assert.Equal(s, result);
         }
@@ -39,7 +39,7 @@ namespace DotNetToolsOutdated.Ut.Tests
         [InlineData("Z")]
         public void ToNerdCaps_OneCharCap_Same(string s)
         {
-            var result = StringUt.ToNerdCaps(s);
+            var result = Utils.ToNerdCaps(s);
 
             var expected = char.ToLower(s[0]).ToString();
 
@@ -51,7 +51,7 @@ namespace DotNetToolsOutdated.Ut.Tests
         {
             var example = "HelloPeople";
 
-            var result = StringUt.ToNerdCaps(example);
+            var result = Utils.ToNerdCaps(example);
 
             var expected = "helloPeople";
             Assert.Equal(expected, result);

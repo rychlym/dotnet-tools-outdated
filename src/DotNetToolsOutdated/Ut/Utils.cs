@@ -3,7 +3,7 @@ using System.Text;
 
 namespace DotNetToolsOutdated.Ut
 {
-    public static class StringUt
+    public static class Utils
     {
         public static string ToNerdCaps(string input)
         {

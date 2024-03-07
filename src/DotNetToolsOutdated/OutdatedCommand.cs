@@ -92,7 +92,7 @@ class OutdatedCommand
                 }
             }
 
-            currentDir = StringUt.IsRootPath(currentDir) ? null : Path.GetDirectoryName(currentDir);
+            currentDir = Utils.IsRootPath(currentDir) ? null : Path.GetDirectoryName(currentDir);
         }
         var localPackagesCount = pkgs.Count;
 
@@ -338,7 +338,7 @@ class OutdatedCommand
             xwr.WriteStartDocument();
             xwr.WriteStartElement("dotnet-tools-outdated");
             xwr.WriteAttributeString("version", GetVersion());
-            xwr.WriteAttributeString("outPkgRegardlessState", StringUt.ToNerdCaps(OutPkgRegardlessState.ToString()));
+            xwr.WriteAttributeString("outPkgRegardlessState", Utils.ToNerdCaps(OutPkgRegardlessState.ToString()));
             foreach (var pkg in pkgs)
             {
                 if (IsPackageToPrintOut(pkg))
@@ -346,16 +346,16 @@ class OutdatedCommand
                     resultsCnt++;
                     xwr.WriteStartElement("package");
                     xwr.WriteAttributeString("name", pkg.PackageName);
-                    xwr.WriteAttributeString("outdated", StringUt.ToNerdCaps(pkg.IsOutdated.ToString()));
+                    xwr.WriteAttributeString("outdated", Utils.ToNerdCaps(pkg.IsOutdated.ToString()));
                     xwr.WriteElementString("currentVer", pkg.CurrentVer);
                     xwr.WriteElementString("availableVer", pkg.AvailableVer);
-                    xwr.WriteElementString("becomeUnlisted", StringUt.ToNerdCaps(pkg.BecomeUnlisted.ToString()));
+                    xwr.WriteElementString("becomeUnlisted", Utils.ToNerdCaps(pkg.BecomeUnlisted.ToString()));
                     xwr.WriteElementString("directory", pkg.Directory);
                     if (pkg.LocalManifestRefInfo != null)
                     {
                         xwr.WriteStartElement("localManifestRefInfo");
                         xwr.WriteAttributeString("filePath", pkg.LocalManifestRefInfo.FilePath);
-                        xwr.WriteAttributeString("isRoot", StringUt.ToNerdCaps(pkg.LocalManifestRefInfo.IsRoot.ToString()));
+                        xwr.WriteAttributeString("isRoot", Utils.ToNerdCaps(pkg.LocalManifestRefInfo.IsRoot.ToString()));
                         xwr.WriteAttributeString("version", pkg.LocalManifestRefInfo.Version.ToString());
                         xwr.WriteEndElement();
                     }
