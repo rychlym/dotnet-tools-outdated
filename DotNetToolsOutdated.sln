@@ -1,18 +1,23 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.9.34607.119
+# Visual Studio Version 18
+VisualStudioVersion = 18.3.11206.111
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DotNetToolsOutdated", "src\DotNetToolsOutdated\DotNetToolsOutdated.csproj", "{92D46581-8D60-418D-837C-3A483C9D2A57}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "assets", "assets", "{6A7FDD27-954D-4C97-913C-3433329C08AB}"
 	ProjectSection(SolutionItems) = preProject
 		CHANGELOG.md = CHANGELOG.md
+		DEVELOPMENT.md = DEVELOPMENT.md
 		LICENSE = LICENSE
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetToolsOutdatedTests", "src\DotNetToolsOutdatedTests\DotNetToolsOutdatedTests.csproj", "{6AF9BBE9-272E-4CE6-AE7F-8BF39E80BC6A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{145D2760-CC2E-4B09-8771-E505BCE4808F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetToolsOutdated.IntegrationTests", "tests\DotNetToolsOutdated.IntegrationTests\DotNetToolsOutdated.IntegrationTests.csproj", "{7DBDAB34-7F19-8202-0F5A-5B7B10C4A948}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DotNetToolsOutdated.Tests", "tests\DotNetToolsOutdated.Tests\DotNetToolsOutdated.Tests.csproj", "{E8B40991-6112-B583-57C5-F0BD13A4C830}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -24,13 +29,21 @@ Global
 		{92D46581-8D60-418D-837C-3A483C9D2A57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92D46581-8D60-418D-837C-3A483C9D2A57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92D46581-8D60-418D-837C-3A483C9D2A57}.Release|Any CPU.Build.0 = Release|Any CPU
-		{6AF9BBE9-272E-4CE6-AE7F-8BF39E80BC6A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6AF9BBE9-272E-4CE6-AE7F-8BF39E80BC6A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6AF9BBE9-272E-4CE6-AE7F-8BF39E80BC6A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6AF9BBE9-272E-4CE6-AE7F-8BF39E80BC6A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DBDAB34-7F19-8202-0F5A-5B7B10C4A948}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DBDAB34-7F19-8202-0F5A-5B7B10C4A948}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DBDAB34-7F19-8202-0F5A-5B7B10C4A948}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DBDAB34-7F19-8202-0F5A-5B7B10C4A948}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E8B40991-6112-B583-57C5-F0BD13A4C830}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E8B40991-6112-B583-57C5-F0BD13A4C830}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E8B40991-6112-B583-57C5-F0BD13A4C830}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E8B40991-6112-B583-57C5-F0BD13A4C830}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7DBDAB34-7F19-8202-0F5A-5B7B10C4A948} = {145D2760-CC2E-4B09-8771-E505BCE4808F}
+		{E8B40991-6112-B583-57C5-F0BD13A4C830} = {145D2760-CC2E-4B09-8771-E505BCE4808F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {576C2C07-FBCC-41CD-9641-575D9856B6EB}

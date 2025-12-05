@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Xml;
 using DotNetToolsOutdated.Extensions;
@@ -17,8 +18,8 @@ using Utf8Json.Resolvers;
 namespace DotNetToolsOutdated;
 
 [Command(
-    Name = "dotnet-tools-outdated",
-    FullName = "dotnet-tools-outdated",
+    Name = AppName,
+    FullName = AppName,
     Description = "Checks whether any of installed .NET command-line tools is outdated.",
     ExtendedHelpText = "\nIt checks globaly installed tools. It also checks locally installed tools, when being run from a folder of locally installed tools. The outdated global packages can be then re-installed by dotnet tool uninstall -g package_name followed by dotnet tool install -g package_name command. (For the locally installed packages, check the appropriate manifest file and use the above commands without the -g option)"
 )]
@@ -26,6 +27,10 @@ namespace DotNetToolsOutdated;
 [VersionOptionFromMember(MemberName = nameof(GetVersion))]
 class OutdatedCommand
 {
+    const string AppName = "dotnet-tools-outdated";
+    const string AppSettingsFileName = "appsettings.json";
+    const string AppSettingsTemplateFileName = "appsettings-fulltemplate.json";
+
     [Option("-n|--name", "Check (and show) only one particular package", CommandOptionType.SingleValue)]
     public string PackageName { get; set; }
 
@@ -53,9 +58,11 @@ class OutdatedCommand
     [Option("-gt|--globalToolsPath", "Use custom location of the globally installed .NET tools", CommandOptionType.SingleValue)]
     public string GlobalToolsPath { get; set; }
 
-    private async Task OnExecuteAsync()
+    private async Task<int> OnExecuteAsync()
     {
-        var httpClient = new HttpClient();
+        EnsureBaseAppSettingsFiles();
+        var appSettings = GetAppSettings();
+        HttpClient httpClient = CreateHttpClient(appSettings);
         var resultsCnt = 0;
         var outdatedCnt = 0;
         var unlistedCnt = 0;
@@ -140,6 +147,7 @@ class OutdatedCommand
         // tasks for awaiting when all done together
         var apiGetResponseOkContinuedTasks = new List<Task>();
         var pkgResponseReadTasks = new List<Task<string>>();
+        var faultedCount = 0;
         foreach (var pkg in pkgs)
         {
             var packageName = pkg.PackageName;
@@ -171,10 +179,12 @@ class OutdatedCommand
                 TaskContinuationOptions.OnlyOnRanToCompletion);
             // on faulted output a message to console
             pureHttpGetTask.ContinueWith(
-                t => Console.WriteLine($"Task finding results for {packageName} has faulted!"),
+                t => {
+                    Console.WriteLine($"Task finding results for {packageName} has faulted! {t.Exception?.InnerException?.Message}");
+                    Interlocked.Increment(ref faultedCount);
+                },
                 TaskContinuationOptions.OnlyOnFaulted)
             .RunAsyncAndForget();
-
             apiGetResponseOkContinuedTasks.Add(processing.ApiGetTaskOkContinued);
         }
 
@@ -196,7 +206,7 @@ class OutdatedCommand
             {
                 if (processing.OkResponseReadTask.IsFaulted)
                 {
-                    Console.WriteLine($"Error parsing the response for {key}");
+                    Console.WriteLine($"Error parsing the response for {key}! {processing.OkResponseReadTask?.Exception?.InnerException?.Message}");
                 }
                 else if (processing.OkResponseReadTask.IsCanceled)
                 {
@@ -211,6 +221,14 @@ class OutdatedCommand
             // set the available version
             var versionsResponse = JsonSerializer.Deserialize<VersionsResponse>(versionsResponseStr).Versions;
             processing.ResultVersionsResponse = versionsResponse;
+        }
+
+        if (faultedCount == pkgs.Count)
+        {
+            // all tasks faulted => nothing to do
+            Console.WriteLine("All tasks fetching the available versions have faulted. If it persists, please consider changing the http client defult settings in the appsettings.json");
+            Console.WriteLine("Exiting...");
+            return -1;
         }
 
         foreach (var pkg in pkgs)
@@ -229,7 +247,7 @@ class OutdatedCommand
 
             if (pkg.IsOutdated)
             {
-                // the package is determined as outdated 
+                // the package is determined as outdated
                 pkg.processingResult.ProcessedOkOutdated = true;
                 if (pkg.BecomeUnlisted) unlistedCnt++;
                 outdatedCnt++;
@@ -246,6 +264,86 @@ class OutdatedCommand
             var packageNameStr = string.IsNullOrEmpty(PackageName) ? "" : PackageName + " ";
             var globalPackagesCount = pkgs.Count - localPackagesCount;
             Console.WriteLine($"{localStr}{globalPackagesCount} global packages available. Found {outdatedCnt} outdated {packageNameStr}packages.");
+        }
+
+        return 0;
+    }
+
+    private void EnsureBaseAppSettingsFiles()
+    {
+        try
+        {
+            var appConfigDir = Utils.GetAppHomeConfigSubDir(AppName);
+            Directory.CreateDirectory(appConfigDir);
+            var baseDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            Utils.CopyIfNotExists(AppSettingsFileName, baseDir, appConfigDir);
+            if (Utils.CopyIfNotExists(AppSettingsTemplateFileName, baseDir, appConfigDir))
+            {
+                Utils.SetReadOnly(Path.Combine(appConfigDir, AppSettingsTemplateFileName));
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error ensuring base app settings files. {ex.Message}");
+        }
+    }
+
+    private AppSettings GetAppSettings()
+    {
+        try
+        {
+            var appSettingsFileName = "appsettings.json";
+            var appConfigDir = Utils.GetAppHomeConfigSubDir(AppName);
+
+            var appSettingsFilePath = Path.Combine(appConfigDir, appSettingsFileName);
+            //Console.WriteLine($"Probing {appSettingsFilePath} ..");
+            if (!File.Exists(appSettingsFilePath))
+            {
+                //Console.WriteLine($"No {appSettingsFileName} file found, so using default settings.");
+                return new AppSettings();
+            }
+
+            var appSettingsBytes = File.ReadAllBytes(appSettingsFilePath);
+            var appSettings = JsonSerializer.Deserialize<AppSettings>(appSettingsBytes);
+            if (appSettings.HttpClient == null)
+            {
+                //Console.WriteLine("No HttpClient app settings, using the defaults.");
+                return new AppSettings();
+            }
+            return appSettings;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error reading appsettings.json file, using default settings.. {ex.Message}");
+            return new AppSettings();
+        }
+    }
+
+    private HttpClient CreateHttpClient(AppSettings appSettings)
+    {
+        if (appSettings.HttpClient == null)
+        {
+            return new HttpClient();
+        }
+        else
+        {
+            var clienSettings = appSettings.HttpClient;
+            var httpClientHandler = new HttpClientHandler
+            {
+                AllowAutoRedirect = clienSettings.AllowAutoRedirect,
+                CheckCertificateRevocationList = clienSettings.CheckCertificateRevocationList,
+                PreAuthenticate = clienSettings.PreAuthenticate,
+                UseDefaultCredentials = clienSettings.UseDefaultCredentials,
+                UseCookies = clienSettings.UseCookies,
+                UseProxy = clienSettings.UseProxy,
+            };
+
+            if (clienSettings.UseDefaultWebProxy)
+            {
+                httpClientHandler.Proxy = System.Net.WebRequest.DefaultWebProxy;
+            }
+
+            return new HttpClient(httpClientHandler);
         }
     }
 
