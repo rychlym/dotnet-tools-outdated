@@ -7,20 +7,25 @@ dotnet-tools-outdated
 [main-nuget-badge]: https://img.shields.io/nuget/v/dotnet-tools-outdated.svg?style=flat-square&label=nuget
 [nuget-dl-badge]: https://img.shields.io/nuget/dt/dotnet-tools-outdated.svg?style=flat-square
 
+
 ## News
 
-Since the dotnet-tools-outdated ver. 0.7.0 is supported checking of **the locally instaled packages**. 
+Version 8.0.0 is targeting .NET 10, 8 and has a configurable http client via the appsettings.json file, located in the user profile directory under the path: 
+```.config/dotnet-tools-outdated/appsettings.json```
+
+Since the dotnet-tools-outdated ver. 0.7.0 is supported checking of **the locally instaled packages**.
 To see more, please go the [chapter bellow](#localy-installed-net-command-line-tools).
 There are also several breaking changes and fixes, especially regarding the JSON and XML output.
 There are also small updates of the options. 
 I will provide a list of the changes at the [NuGet package web site](https://www.nuget.org/packages/dotnet-tools-outdated/0.7.0).
+
 
 ## Overview
 
 It might be handy to find out whether newer versions of the .NET global tools currently installed on your machine is available.
 However, the .NET command-line tools do not provide a built-in way for you to report on outdated NuGet packages of the global tools.
 
-**dotnet-tools-outdated** is a  global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
+**dotnet-tools-outdated** is a global tool, that allows you to quickly report on any outdated global tools currently installed on your machine. 
 
 
 ## Detail
@@ -86,6 +91,7 @@ dotnet-tools-outdated 0.6.1   0.7.0
 The table of locally installed tools is recognizable by the additional Manifest table column.  
 The locally installed tools are always tight with the .config/dotnet-tools.json manifest file somewhere in the current directory structure - to get to more detail, please check the 
 [.NET Local Tools](#net-local-tools) links in the [Useful links](#useful-links)
+
 
 ## Installation
 
