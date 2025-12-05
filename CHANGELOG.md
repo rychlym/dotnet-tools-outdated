@@ -3,7 +3,7 @@
 All notable changes to this project will be documented in this file.
 ## [v0.8.0]
 - bump to .NET 10.0, keeping .NET 8.0 target
-- configurable http client via appsettings.json in the .config. It suppors some http client parameters (like usedefaultcredentials, proxy, timeout).
+- configurable http client via appsettings.json in the .config. It supports some http client parameters (like UseDefaultCredentials, Proxy, Timeout).
 
 ## [v0.7.0]
 - support for dotnet local tools
