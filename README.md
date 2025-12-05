@@ -289,7 +289,7 @@ cd dotnet-tools-outdated/src/DotNetToolsOutdated
 dotnet pack -c release -o nupkg
 ```
 
-Output is located in ```src/DotNetToolsOutdated/nupkg```
+Output is located in ```./nupkg```
 
 ## Configuration
 
