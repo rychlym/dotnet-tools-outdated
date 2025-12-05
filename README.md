@@ -89,7 +89,7 @@ The locally installed tools are always tight with the .config/dotnet-tools.json 
 
 ## Installation
 
-Download and install the [.NET 6 SDK or .NET 8 SDK](https://www.microsoft.com/net/download) currently in LTS (Long Term Support) or a newer (or a non LTS between). 
+Download and install the [.NET 8 SDK or .NET 10 SDK](https://www.microsoft.com/net/download) currently in LTS (Long Term Support) or a newer (or a non LTS between). 
 Once installed, run the following command:
 
 ```bash
@@ -268,6 +268,11 @@ dotnet-tools-outdated -f xml
 
 ## Build
 
+Please note, that to build the project, you need to have installed the .NET 10 SDK or a newer.
+(Please check the [Development](DEVELOPMENT.md), if cuourious about more development related details)
+
+There we go the basic steps to build and pack the project:
+
 ```bash
 git clone https://github.com/rychlmoj/dotnet-tools-outdated
 ```
@@ -280,21 +285,44 @@ dotnet pack -c release -o nupkg
 
 Output is located in ```src/DotNetToolsOutdated/nupkg```
 
+## Configuration
+
+In usual cases, you don't need to configure anything. However, if you experience any issues with accessing the NuGet repository,
+it might be needed change the tool's http client settings .e.g. a proxy or other settings.
+
+The configuration file is located in the user profile directory under the path: 
+```.config/dotnet-tools-outdated/appsettings.json```
+
+There is also other file, which should be :
+```.config/dotnet-tools-outdated/appsettings-=fulltemplate.json```
+
+
+If not yet configured, please run the tool and it helps to create the configuration directory and appropriate appsetting.json file in the user profile directory.
+
+Then please check your .config/dotnet-tools-outdated/appsettings.json file and modify it if needed.
+
+## Changelog
+Please check the [Changelog](CHANGELOG.md).
+
 ## Uninstall
 
 ```bash
 dotnet tool uninstall -g dotnet-tools-outdated
 ```
+Note:
+ Since the tool is run, it ensures that the .config/dotnet-tools-outdated (if not created yet) is created in the user profile directory.
+ It contains the appsettings. This directoru si not removed by the above uninstall command. So if a need, please remove it manually. 
 
 ## Common Release Notes
 
 Since the versions 0.6.0> the **dotnet-tools-outdated** are going to be ported for the available .NET [LTS scheme](https://dotnet.microsoft.com/platform/support/policy/dotnet-core)
-. (Currently the .NET 6 and .NET 8)
+. (Currently the .NET 8 and .NET 10)
 This is on behalf of minimizing the size of the package. It is also supposed, folks who using this usually care about the updated versions of the global tools, 
 and  don't' need the older version of the .NET SDK.
 
 However if a relly a neeed of environment with an older .NET SDK, then please install the following lower version 
 (There is no functionality change/bug fixings in the current version  comparing up to the 0.5.2 version)
+- 0.7.0 - if a need to run under the .NET 6.0 (and no .NET 8> SDK is present.)
 - 0.6.0 - if a need to run under the .NET 3.1 (and no .NET 6> SDK is present.)
 - 0.5.x - if a need to run under the .NET Core 2.1
 
@@ -312,3 +340,5 @@ However if a relly a neeed of environment with an older .NET SDK, then please in
 (Since .NET Core 3.0 SDK)
 * [Install .NET Local Tool](https://learn.microsoft.com/en-us/dotnet/core/tools/global-tools#install-a-local-tool)
 
+### .NET
+[.NET download page](https://www.microsoft.com/net/download).

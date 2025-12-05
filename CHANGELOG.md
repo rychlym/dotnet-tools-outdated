@@ -1,8 +1,40 @@
 # Changelog
+
+All notable changes to this project will be documented in this file.
+## [v0.8.0]
+- bump to .NET 10.0, keeping .NET 8.0 target
+- configurable http client via appsettings.json in the .config. It suppors some http client parameters (like usedefaultcredentials, proxy, timeout).
+
+## [v0.7.0]
+- support for dotnet local tools
+- updates and fixes for output json and xml formats
+- Semver package update
+- -o|--output option typo fix
+- small fixes in the Readme file 
+
+## [v0.6.2]
+- .NET Core 3.1, .NET 7.0 target removed (keeping .NET 6.0, .NET 8.0)
+## [v0.6.1]
+- bump to .NET 8.0,.NET 7.0 (.NET 6.0, .NET Core 3.1. kept)
+- fix: when no packages are specified, the program should exit with code 0 (no outdated packages found) instead of code 1 (error)
+- 
+## [v0.6.0]
+- bump to .NET 6.0 (.NET Core 3.1. kept, .NET Core 2.1 target removed)
+
+## [v0.5.1]
+- bump to .NET 6.0
+- uses different NuGet API endpoint to get the versions list)
+- -pre|--prerelease parameter - Check also the pre-released versions
+  (by default - only stable versions are considered. That is actually a small breaking change)
+- unlisted packages are now ignored by default (no output line)
+  - use --include-unlisted parameter to include them in the output
+
+## [v0.5.0]
+- Bump to .NET 5.0 (.NET Core 3.1., .NET Core 2.1 targets kept)
+
 ## [v0.4.1]
 - remove the -u shortcut option of the --utf8 (supposed to not be mixed with possible future update command)
 
-# Changelog
 ## [v0.4.0]
 - make the package smaller by getting rid of references to the Microsoft.AspNet.WebApi.Client, (Newtonsoft.Json) - using the Utf8Json package instead.
 - --noIndent parameter (for the JSON output type)

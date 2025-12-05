@@ -12,5 +12,6 @@ public partial class OutJsonRoot
 
     [DataMember(Name = "dotnet-tools-outdated")]
     public List<OutdatedResponse> Packages { get; set; }
-
 }
+
+

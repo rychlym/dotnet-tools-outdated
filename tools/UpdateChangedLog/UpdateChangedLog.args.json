@@ -1,0 +1,14 @@
+{
+  "FileVersion": 2,
+  "Id": "104638c4-5a7c-347d-8149-2b6b5af90d9b",
+  "Items": [
+    {
+      "Id": "83cec053-7923-407b-862a-3a929e5dbc9c",
+      "Command": "https://github.com/rychlym/dotnet-tools-outdated"
+    },
+    {
+      "Id": "c3848dca-e4e5-4331-bf18-400689600bb0",
+      "Command": "--days 2000"
+    }
+  ]
+}
