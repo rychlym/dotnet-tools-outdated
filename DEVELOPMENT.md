@@ -18,7 +18,7 @@ git clone https://github.com/rychlmoj/dotnet-tools-outdated
 ```
 
 ## Building the project
-(Please check the [Changelog](DEVELOPMENT.md), if cuourious about more development related details)
+(Please check the [Changelog](DEVELOPMENT.md), if courious about more development related details)
 
 ```bash
 cd dotnet-tools-outdated/src/DotNetToolsOutdated
