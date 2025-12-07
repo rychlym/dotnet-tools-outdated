@@ -10,7 +10,7 @@ You can download it from the official Microsoft .NET website: https://dotnet.mic
 You can clone the repository using git
 
 ```bash
-cd your-desired-base-directory
+cd a-base-directory-you-want-to-clone-to
 ```
 
 ```bash
@@ -28,18 +28,25 @@ cd dotnet-tools-outdated/src/DotNetToolsOutdated
 dotnet pack -c release -o nupkg
 ```
 
-Output from the pack is located in ```./nupkg``` (```src/DotNetToolsOutdated/nupkg```)
+The NuGet package created by the pack command is located at ```./nupkg``` or at ```src/DotNetToolsOutdated/nupkg``` directories.
 
 
 ## Install the project from the local package
 ```bash
-dotnet tool install --global dotnet-tools-outdated --add-source ./nupkg
+dotnet tool install -g dotnet-tools-outdated --add-source ./nupkg
 ```
 
 ## Uninstall the dotnet-tools-outdated
 
 This time, as usual way:
 ```bash
-dotnet tool uninstall --global dotnet-tools-outdated
+dotnet tool uninstall -g dotnet-tools-outdated
+```
+
+## Update dotnet-tools-outdated
+
+Alternatively, if you want update from NuGet package having newer version, you don't need to uninstall, but just update :
+```bash
+dotnet tool update -g dotnet-tools-outdated --add-source ./nupkg
 ```
 

@@ -293,19 +293,19 @@ Output is located in ```./nupkg```
 
 ## Configuration
 
-In usual cases, you don't need to configure anything. However, if you experience any issues with accessing the NuGet repository,
-it might be needed change the tool's http client settings .e.g. a proxy or other settings.
+Usually, you don't need to configure anything. However, if you experience any issues with accessing the NuGet repository,
+it might help to change the tool's http client settings .e.g. a proxy or other settings.
 
 The configuration file is located in the user profile directory under the path: 
 ```.config/dotnet-tools-outdated/appsettings.json```
 
-There is also other file, which should be :
+Please run the ```dotnet-tools-outdated``` at least once to create the configuration files. The newly created appsettings.json is currently an empty json file. All the setting items are optional and as they are not specified, the default values are used.
+Note, the default settings is bacwards compatible with the previous versions of the tool.
+
+The configuration directory also contains a file called:
 ```.config/dotnet-tools-outdated/appsettings-=fulltemplate.json```
+The file is read-only and contains all the possible configuration settings with its default values and comments. So you can use it as a reference.
 
-
-If not yet configured, please run the tool and it helps to create the configuration directory and appropriate appsetting.json file in the user profile directory.
-
-Then please check your .config/dotnet-tools-outdated/appsettings.json file and modify it if needed.
 
 ## Changelog
 Please check the [Changelog](CHANGELOG.md).
