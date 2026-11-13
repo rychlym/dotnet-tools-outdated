@@ -116,7 +116,7 @@ class OutdatedCommand
             foreach (var dir in dirs)
             {
                 var pkgName = Path.GetFileName(dir);
-                if (pkgName.Equals(".stage", StringComparison.Ordinal)) continue;
+                if (pkgName.Equals(".stage", StringComparison.Ordinal) || pkgName.Equals(".locks", StringComparison.Ordinal)) continue;
                 pkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
             }
         }
