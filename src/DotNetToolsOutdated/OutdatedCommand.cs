@@ -116,7 +116,7 @@ class OutdatedCommand
             foreach (var dir in dirs)
             {
                 var pkgName = Path.GetFileName(dir);
-                if (pkgName.Equals(".stage", StringComparison.Ordinal)) continue;
+                if (pkgName.Equals(".stage", StringComparison.Ordinal) || pkgName.Equals(".locks", StringComparison.Ordinal)) continue;
                 pkgs.Add(new OutdatedResponse() { PackageName = pkgName, Directory = dir });
             }
         }
@@ -496,14 +496,14 @@ class OutdatedCommand
                 if (pkg.LocalManifestRefInfo == null)
                 {
                     if (maxNameLen < pkg.PackageName.Length) maxNameLen = pkg.PackageName.Length;
-                    if (maxInstVerLen < pkg.CurrentVer.Length) maxInstVerLen = pkg.CurrentVer.Length;
-                    if (maxAvailVerLen < pkg.AvailableVer.Length) maxAvailVerLen = pkg.AvailableVer.Length;
+                    if (pkg.CurrentVer != null && maxInstVerLen < pkg.CurrentVer.Length) maxInstVerLen = pkg.CurrentVer.Length;
+                    if (pkg.AvailableVer != null && maxAvailVerLen < pkg.AvailableVer.Length) maxAvailVerLen = pkg.AvailableVer.Length;
                 }
                 else
                 {
                     if (maxLocalNameLen < pkg.PackageName.Length) maxLocalNameLen = pkg.PackageName.Length;
-                    if (maxLocalInstVerLen < pkg.CurrentVer.Length) maxLocalInstVerLen = pkg.CurrentVer.Length;
-                    if (maxLocalAvailVerLen < pkg.AvailableVer.Length) maxLocalAvailVerLen = pkg.AvailableVer.Length;
+                    if (pkg.CurrentVer != null && maxLocalInstVerLen < pkg.CurrentVer.Length) maxLocalInstVerLen = pkg.CurrentVer.Length;
+                    if (pkg.AvailableVer != null && maxLocalAvailVerLen < pkg.AvailableVer.Length) maxLocalAvailVerLen = pkg.AvailableVer.Length;
                     if (maxLocalManifestLen < pkg.LocalManifestRefInfo.FilePath.Length) maxLocalManifestLen = pkg.LocalManifestRefInfo.FilePath.Length;
                 }
             }
@@ -543,7 +543,7 @@ class OutdatedCommand
                             }
 
                             //local package
-                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxLocalNameLen)} {outdatedPkg.CurrentVer.PadRight(maxLocalInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxLocalAvailVerLen)} {outdatedPkg.LocalManifestRefInfo.FilePath.PadRight(maxLocalManifestLen)}");
+                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxLocalNameLen)} {(outdatedPkg.CurrentVer ?? "").PadRight(maxLocalInstVerLen)} {outdatedPkg.AvailableVer.PadRight(maxLocalAvailVerLen)} {outdatedPkg.LocalManifestRefInfo.FilePath.PadRight(maxLocalManifestLen)}");
                             localOutdated++;
                         }
                         else
@@ -557,7 +557,7 @@ class OutdatedCommand
                             }
 
                             //global package
-                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {outdatedPkg.CurrentVer.PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer}");
+                            tw.WriteLine($"{outdatedPkg.PackageName.PadRight(maxNameLen)} {(outdatedPkg.CurrentVer ?? "").PadRight(maxInstVerLen)} {outdatedPkg.AvailableVer}");
                             globalOutdated++;
                         }
                     }
