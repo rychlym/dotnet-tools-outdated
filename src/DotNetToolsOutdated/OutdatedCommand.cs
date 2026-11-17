@@ -160,7 +160,7 @@ class OutdatedCommand
             packageTasksDict.Add(packageName, processing);
 
             // start tasks for fetching the available version
-            var url = $"https://api-v2v3search-0.nuget.org/autocomplete?id={packageName}&prerelease={prereleasePar}";
+            var url = $"https://api-v2v3search-0.nuget.org/autocomplete?id={packageName}&prerelease={prereleasePar}&semVerLevel=2.0.0";
             var pureHttpGetTask = httpClient.GetAsync(url);
             processing.ApiGetTaskOkContinued = pureHttpGetTask.ContinueWith(t =>
                 {
